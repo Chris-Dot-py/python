@@ -1,9 +1,9 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity testfile is
+entity tb_clock is
 end entity;
 
-architecture testfile_arch of testfile is
+architecture tb_clock_arch of tb_clock is
 begin
 end architecture;

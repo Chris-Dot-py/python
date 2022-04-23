@@ -1,9 +1,9 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity testbench is
+entity clock is
 end entity;
 
-architecture testbench_arch of testbench is
+architecture clock_arch of clock is
 begin
 end architecture;
