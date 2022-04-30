@@ -1,6 +1,7 @@
 from VHDL import *
 
 def main():
+
     clock = Entity('clock')
     clock.add_port(Port('clk','in',1))
     clock.add_port(Port('rsgn','in',1))
@@ -13,7 +14,6 @@ def main():
 
     clock.generate_code()
     tb_clock.generate_code()
-
 
 if __name__ == '__main__' :
     # print(__name__)
