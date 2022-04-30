@@ -1,1 +1,3 @@
-welcome_message = ('Welcome to VDHL code generator!')
+from .entity import Entity # import class
+from .port import Port # import class
+from .testbench import Testbench
