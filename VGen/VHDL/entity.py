@@ -18,7 +18,7 @@ class Entity:
     architecture = {'open' : 'architecture {name}_arch of {name} is\n', 'begin' : 'begin\n', 'end' : 'end architecture;'}
     directory = r"VHDL_codes"
 
-    def __init__(self, entity_name):
+    def __init__(self, entity_name, circuit_type = None):
         self.__entity_name = entity_name
         self.__vhdl_code = []
         self.__port_body = {}
