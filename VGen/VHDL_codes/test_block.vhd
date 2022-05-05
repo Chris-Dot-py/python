@@ -1,20 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity clock is
-  port(
-    clk : in std_logic;
-    rsgn : in std_logic;
-    seconds : out std_logic_vector(5 downto 0);
-    minutes : out std_logic_vector(5 downto 0);
-    hours : out std_logic_vector(4 downto 0);
-    dummy_port : out std_logic_vector(15 downto 0)
-  );
-end entity clock;
-
-architecture clock_arch of clock is
-
-  component test_block is
+entity test_block is
   port(
     input_0 : in std_logic;
     input_1 : in std_logic;
@@ -41,21 +28,9 @@ architecture clock_arch of clock is
     output_8 : out std_logic;
     output_9 : out std_logic
   );
-  end component test_block;
+end entity test_block;
 
-  component tb_clock is
-  end component tb_clock;
-
-  component dummy_block is
-  port(
-    input_0 : in std_logic;
-    input_1 : in std_logic;
-    output_0 : out std_logic;
-    output_1 : out std_logic;
-    output_2 : out std_logic;
-    output_3 : out std_logic
-  );
-  end component dummy_block;
+architecture test_block_arch of test_block is
 
 begin
 end architecture;
