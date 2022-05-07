@@ -36,6 +36,7 @@ def main():
     clock.show_components()
     clock.instantiate(tb_clock)
     clock.show_components()
+    clock.instantiate(test_block)
     clock.instantiate(tb_clock,3)
     clock.instantiate(dummy_block,3)
     clock.show_components()

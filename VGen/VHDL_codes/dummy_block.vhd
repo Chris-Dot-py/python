@@ -15,4 +15,5 @@ end entity dummy_block;
 architecture dummy_block_arch of dummy_block is
 
 begin
+
 end architecture;

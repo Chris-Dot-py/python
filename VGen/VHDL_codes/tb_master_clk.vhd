@@ -7,4 +7,5 @@ end entity tb_master_clk;
 architecture tb_master_clk_arch of tb_master_clk is
 
 begin
+
 end architecture;

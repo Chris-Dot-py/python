@@ -7,4 +7,5 @@ end entity tb_clock;
 architecture tb_clock_arch of tb_clock is
 
 begin
+
 end architecture;

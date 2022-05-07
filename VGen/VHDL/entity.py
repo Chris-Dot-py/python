@@ -13,16 +13,27 @@ import os
 
 class Entity:
     # constants : should be saved in VHDL
-    library = {'ieee' : 'library ieee;\n'}
-    use = {'std_logic_1164' : 'use ieee.std_logic_1164.all;\n'}
-    entity = {'open' : 'entity {name} is\n', 'end' : 'end entity {name};\n\n'}
-    component = {'open' : '  component {name} is\n', 'end' : '  end component {name};\n\n'}
-    instance = {'open':'  {i_name} : {e_name}\n'\
-                       '  port map(\n',
-                'end':'  );'}
-    port = {'open' : '  port(\n', 'close' :'  );\n'}
-    architecture = {'open' : 'architecture {name}_arch of {name} is\n\n', 'begin' : 'begin\n', 'end' : 'end architecture;'}
-    directory = r"VHDL_codes"
+    library      = {'ieee'  :           'library ieee;\n'}
+    use          = {'std_logic_1164' :  'use ieee.std_logic_1164.all;\n'}
+
+    entity       = {'open'  :           'entity {name} is\n',
+                    'end'   :           'end entity {name};\n\n'}
+
+    port         = {'open'  :           '  port(\n',
+                    'end'   :           '  );\n'}
+
+    component    = {'open'  :           '  component {name} is\n',
+                    'end'   :           '  end component {name};\n\n'}
+
+    instance     = {'open'  :           '  {i_name} : {e_name}\n'\
+                                        '  port map(\n',
+                    'map'   :           '    {i_port} => {connect_to},\n',
+                    'end'   :           '  );\n\n'}
+
+    architecture = {'open'  :           'architecture {name}_arch of {name} is\n\n',
+                    'begin' :           'begin\n\n',
+                    'end'   :           'end architecture;\n'}
+    directory    = r"VHDL_codes"
 
     def __init__(self, entity_name, circuit_type = None):
         self.__entity_name = entity_name
@@ -99,62 +110,79 @@ class Entity:
     def remove_port(self):
         pass
 
+    def add_line(self, s):
+        self.__vhdl_code.append(s)
+
     def __build_code(self, file_name = None):
         if file_name == None:
             name_placeholder = self.__entity_name
         else:
             name_placeholder = file_name
 
-        self.__vhdl_code.append(Entity.library['ieee'])
-        self.__vhdl_code.append(Entity.use['std_logic_1164'])
-        self.__vhdl_code.append('\n')
-        self.__vhdl_code.append(Entity.entity['open'].format(name = name_placeholder))
+        self.add_line(Entity.library['ieee'])
+        self.add_line(Entity.use['std_logic_1164'])
+        self.add_line('\n')
+        self.add_line(Entity.entity['open'].format(name = name_placeholder))
 
         if not (self.__number_of_inputs == 0 and self.__number_of_outputs == 0):
-            self.__vhdl_code.append(Entity.port['open'])
+            self.add_line(Entity.port['open'])
 
             for index,line in enumerate(list(self.__port_body.values())):
                 if index == len(self.__port_body) - 1:
                     tmp = line.replace(';','')
-                    self.__vhdl_code.append(tmp)
+                    self.add_line(tmp)
                 else:
-                    self.__vhdl_code.append(line)
+                    self.add_line(line)
 
-            self.__vhdl_code.append(Entity.port['close'])
+            self.add_line(Entity.port['end'])
 
-        self.__vhdl_code.append(Entity.entity['end'].format(name = self.get_entity_name()))
+        self.add_line(Entity.entity['end'].format(name = self.get_entity_name()))
 
-        self.__vhdl_code.append(Entity.architecture['open'].format(name = name_placeholder))
+        self.add_line(Entity.architecture['open'].format(name = name_placeholder))
 
         if len(self.__components) != 0:
             for comp_name,(comp,instances) in self.__components.items():
-                self.__vhdl_code.append(Entity.component['open'].format(name = comp_name))
+                self.add_line(Entity.component['open'].format(name = comp_name))
 
                 tmp_comp = comp.get_ports()
                 if len(tmp_comp) != 0:  # skip if no ports
-                    self.__vhdl_code.append(Entity.port['open'])
+                    self.add_line(Entity.port['open'])
 
                 for index,line in enumerate(list(tmp_comp.values())):
                     if index == len(tmp_comp) - 1:
                         tmp_line = line.replace(';','')
-                        self.__vhdl_code.append(tmp_line)
+                        self.add_line(tmp_line)
                     else:
-                        self.__vhdl_code.append(line)
+                        self.add_line(line)
 
                 if len(tmp_comp) != 0:  # skip if no ports
-                    self.__vhdl_code.append(Entity.port['close'].format(name = comp_name))
+                    self.add_line(Entity.port['end'].format(name = comp_name))
 
-                self.__vhdl_code.append(Entity.component['end'].format(name = comp_name))
+                self.add_line(Entity.component['end'].format(name = comp_name))
 
-        self.__vhdl_code.append(Entity.architecture['begin'])
+        self.add_line(Entity.architecture['begin'])
 
         # instantiations
-        for entity_name,(component,instances) in list(self.__components.items()):
-            if instances != 0:
-                for i in range(instances):
-                    print(f"{component.get_entity_name()}_{i} instanced!")
+        for comp_name,(component,instances) in list(self.__components.items()):
+            tmp_port_body = component.get_ports()
+            if len(tmp_port_body) != 0:
+                if instances != 0:
+                    for i in range(instances):
+                        self.add_line(Entity.instance['open'].format(i_name = f'{comp_name}_{i}_i', e_name = comp_name))
 
-        self.__vhdl_code.append(Entity.architecture['end'])
+                        for index,port_name in enumerate(list(tmp_port_body.keys())):
+
+                            if index == len(tmp_port_body) - 1:
+                                tmp = Entity.instance['map'].format(i_port = port_name, connect_to = 'open')
+                                self.add_line(tmp.replace(',',''))
+                            else:
+                                self.add_line(Entity.instance['map'].format(i_port = port_name, connect_to = 'open'))
+
+                        self.add_line(Entity.instance['end'])
+
+                        print(f"{comp_name}_{i}_i instanced!")
+
+        self.add_line(Entity.architecture['end'])
 
     def show_code(self):
         print(self.get_code())

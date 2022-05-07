@@ -33,4 +33,5 @@ end entity test_block;
 architecture test_block_arch of test_block is
 
 begin
+
 end architecture;

@@ -58,4 +58,63 @@ architecture clock_arch of clock is
   end component dummy_block;
 
 begin
+
+  test_block_0_i : test_block
+  port map(
+    input_0 => open,
+    input_1 => open,
+    input_2 => open,
+    input_3 => open,
+    input_4 => open,
+    input_5 => open,
+    input_6 => open,
+    input_7 => open,
+    input_8 => open,
+    input_9 => open,
+    input_10 => open,
+    input_11 => open,
+    input_12 => open,
+    input_13 => open,
+    output_0 => open,
+    output_1 => open,
+    output_2 => open,
+    output_3 => open,
+    output_4 => open,
+    output_5 => open,
+    output_6 => open,
+    output_7 => open,
+    output_8 => open,
+    output_9 => open
+  );
+
+  dummy_block_0_i : dummy_block
+  port map(
+    input_0 => open,
+    input_1 => open,
+    output_0 => open,
+    output_1 => open,
+    output_2 => open,
+    output_3 => open
+  );
+
+  dummy_block_1_i : dummy_block
+  port map(
+    input_0 => open,
+    input_1 => open,
+    output_0 => open,
+    output_1 => open,
+    output_2 => open,
+    output_3 => open
+  );
+
+  dummy_block_2_i : dummy_block
+  port map(
+    input_0 => open,
+    input_1 => open,
+    output_0 => open,
+    output_1 => open,
+    output_2 => open,
+    output_3 => open
+  );
+
 end architecture;
