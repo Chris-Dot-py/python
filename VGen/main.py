@@ -28,13 +28,20 @@ def main():
     clock.add_component(tb_clock)
     clock.add_component(dummy_block)
     # button generate command
-    clock.generate_code()
     clk_gen.generate_code()
 
     tb_clock.quick_test()
     clk_gen.quick_test()
 
+    clock.show_components()
+    clock.instantiate(tb_clock)
+    clock.show_components()
+    clock.instantiate(tb_clock,3)
+    clock.instantiate(dummy_block,3)
+    clock.show_components()
 
+
+    clock.generate_code()
 
     # # idea number 1 : generates a tb file and a clocked entity
     # DUT = Entity('insert_vhd_file_path')

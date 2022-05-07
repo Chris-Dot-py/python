@@ -5,6 +5,7 @@
 
     Notes :
         - find a better way to handle python errors or a way to generate custom errors
+            (see try-except)
 """
 from pathlib import Path
 from .port import Port
@@ -16,6 +17,9 @@ class Entity:
     use = {'std_logic_1164' : 'use ieee.std_logic_1164.all;\n'}
     entity = {'open' : 'entity {name} is\n', 'end' : 'end entity {name};\n\n'}
     component = {'open' : '  component {name} is\n', 'end' : '  end component {name};\n\n'}
+    instance = {'open':'  {i_name} : {e_name}\n'\
+                       '  port map(\n',
+                'end':'  );'}
     port = {'open' : '  port(\n', 'close' :'  );\n'}
     architecture = {'open' : 'architecture {name}_arch of {name} is\n\n', 'begin' : 'begin\n', 'end' : 'end architecture;'}
     directory = r"VHDL_codes"
@@ -26,6 +30,7 @@ class Entity:
         self.__port_body = {} # dictionary, associate port name with port lines
         self.__number_of_inputs = 0
         self.__number_of_outputs = 0
+        # {"entity_name" : (Entity, instances)}
         self.__components = {} # dictionary of entities
         self.__isPrimitive = True # if True, no need for component declarations or instantiations
 
@@ -35,6 +40,12 @@ class Entity:
     def get_ports(self):
         return self.__port_body
 
+    def get_code(self):
+        if len(self.__vhdl_code) == 0:
+            return 'Null'
+        else:
+            return ''.join([str(item) for item in self.__vhdl_code])
+
     def add_port(self, port):
         port_name = port.get_port_name()
         self.__port_body[port_name] = port.get_line()
@@ -43,6 +54,16 @@ class Entity:
         elif port.get_direction() == "out":
             self.__number_of_outputs += 1;
 
+    def get_component(self,entity):
+        if entity.get_entity_name() in list(self.__components.keys()):
+            entity_name = entity.get_entity_name()
+            comp,instances = self.__components[entity_name]
+            return comp
+
+
+    # returns a list of tuple pairs entity,instances
+    def get_components(self):
+        return self.__components.values()
 
     """
         Can add the import function to this
@@ -55,6 +76,25 @@ class Entity:
         for i in range(num_of_outputs):
             self.add_port(Port(f'output_{i}','out',1))
             self.__number_of_outputs += 1
+
+    def add_component(self, entity):
+        entity_name = entity.get_entity_name()
+        self.__components[entity_name] = entity,0
+
+
+    def instantiate(self,entity, num_of_instances = 0):
+        if entity.get_entity_name() in list(self.__components.keys()):
+            comp, instances = self.__components[entity.get_entity_name()]
+
+            if num_of_instances == 0:
+                N = instances + 1
+            else:
+                N = instances + num_of_instances
+
+            self.__components[entity.get_entity_name()] = comp,N
+        #     print("instantiated!")
+        else:
+            print('component hasn\'t been declared')
 
     def remove_port(self):
         pass
@@ -87,10 +127,10 @@ class Entity:
         self.__vhdl_code.append(Entity.architecture['open'].format(name = name_placeholder))
 
         if len(self.__components) != 0:
-            for comp_name,comp in self.__components.items():
+            for comp_name,(comp,instances) in self.__components.items():
                 self.__vhdl_code.append(Entity.component['open'].format(name = comp_name))
 
-                tmp_comp = comp.get_port_body()
+                tmp_comp = comp.get_ports()
                 if len(tmp_comp) != 0:  # skip if no ports
                     self.__vhdl_code.append(Entity.port['open'])
 
@@ -107,19 +147,24 @@ class Entity:
                 self.__vhdl_code.append(Entity.component['end'].format(name = comp_name))
 
         self.__vhdl_code.append(Entity.architecture['begin'])
+
+        # instantiations
+        for entity_name,(component,instances) in list(self.__components.items()):
+            if instances != 0:
+                for i in range(instances):
+                    print(f"{component.get_entity_name()}_{i} instanced!")
+
         self.__vhdl_code.append(Entity.architecture['end'])
 
     def show_code(self):
         print(self.get_code())
 
-    def get_code(self):
-        if len(self.__vhdl_code) == 0:
-            return 'Null'
-        else:
-            return ''.join([str(item) for item in self.__vhdl_code])
-
-    def get_port_body(self):
-        return self.__port_body
+    def show_components(self):
+        print(f"\nDeclared components :\n")
+        for component,instances in self.__components.values():
+            s = f' {component.get_entity_name()}, {instances} instances'
+            print(s)
+        print('')
 
     def clear_code(self):
         self.__vhdl_code = []
@@ -143,9 +188,7 @@ class Entity:
         file = Path(path)
         return file.is_file()
 
-    def add_component(self, entity):
-        entity_name = entity.get_entity_name()
-        self.__components[entity_name] = entity
+
 
 
 # print(__name__)
