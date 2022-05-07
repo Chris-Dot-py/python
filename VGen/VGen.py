@@ -1,5 +1,8 @@
-class VGen(): 
+class VGen:
     def __init__(self):
+        pass
+
+    def import(self):
         pass
 
     def quick_test(self, clk_freq, DUT):

@@ -4,18 +4,15 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity clock is
+entity counter is
   port(
     clk : in std_logic;
     rst_n : in std_logic;
-    seconds : out std_logic_vector(5 downto 0);
-    minutes : out std_logic_vector(5 downto 0);
-    hours : out std_logic_vector(4 downto 0);
-    dummy_port : out std_logic_vector(15 downto 0)
+    count : out std_logic_vector(3 downto 0)
   );
-end entity clock;
+end entity counter;
 
-architecture clock_arch of clock is
+architecture counter_arch of counter is
 
 
 begin
