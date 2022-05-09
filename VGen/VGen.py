@@ -1,4 +1,5 @@
 from VHDL import *
+import os
 
 class VGen:
     def __init__(self):
@@ -26,6 +27,18 @@ class VGen:
                     done = True
 
         return entity
+
+    @staticmethod
+    def v_import_files(directory_path):
+        files = os.listdir(directory_path)
+        path = directory_path + '/'
+        entities = {}
+        for file in files:
+            file_path = path + ''.join(file)
+            imported_entity = VGen.v_import(file_path)
+            entities[imported_entity.get_entity_name()] = imported_entity
+
+        return entities
 
     @staticmethod
     def get_port_len(line):
@@ -60,12 +73,17 @@ class VGen:
         # with a declared component and port mapped black_box clocked entity
         # if file is imported (indicated path file), declares imported file and
         # port maps it.
+#
+# file = r'VHDL_codes\clock.vhd'
+#
+# entity = VGen.v_import(file)
+# print(entity.get_entity_name())
+# ports = entity.get_ports()
+# for port_name, port in list(ports.items()):
+#     print(port_name)
+#     print(port.get_line())
 
-file = r'VHDL_codes\clock.vhd'
+imported_entities = VGen.v_import_files(r'C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes')
 
-entity = VGen.v_import(file)
-print(entity.get_entity_name())
-ports = entity.get_ports()
-for port_name, port in list(ports.items()):
-    print(port_name)
-    print(port.get_line())
+for name,enti in imported_entities.items():
+    print(enti.get_entity_name())
