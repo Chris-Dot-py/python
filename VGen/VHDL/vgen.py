@@ -83,7 +83,7 @@ class VGen:
 #     print(port_name)
 #     print(port.get_line())
 
-imported_entities = VGen.v_import_files(r'C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes')
-
-for name,enti in imported_entities.items():
-    print(enti.get_entity_name())
+# imported_entities = VGen.v_import_files(r'C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes')
+#
+# for name,enti in imported_entities.items():
+#     print(enti.get_entity_name())

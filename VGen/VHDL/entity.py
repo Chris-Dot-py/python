@@ -18,6 +18,8 @@ class Entity:
 
     entity       = {'open'  :           'entity {name} is\n',
                     'end'   :           'end entity {name};\n\n'}
+    generic      = {'open'  :           'generic(\n',
+                    'end'   :           ');\n'}
 
     port         = {'open'  :           '  port(\n',
                     'end'   :           '  );\n'}
