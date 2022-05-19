@@ -7,12 +7,20 @@ use ieee.numeric_std.all;
 
 entity clk_rst is
   generic(
-      len : integer;
-      inverted : boolean
+      --
+      len : integer := 8;
+      -- comment
+      inverted : boolean := False
+      --
+      -- commet
   );
   port(
-    clk : out std_logic;
-    rst_n : out std_logic
+    -- comment here
+    clk : in std_logic; -- clock
+    -- comment here
+    rst_n : out std_logic; -- low active reset
+    display_out : out std_logic_vector(7 downto 0)
+    -- comment here
   );
 end entity clk_rst;
 

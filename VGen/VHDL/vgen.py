@@ -26,6 +26,7 @@ class VGen:
         open_brackets = 0
         step_one_done = False
         hasGenerics = False
+        isComment = False
         generics = ''
         ports = ''
         line = ''
@@ -42,32 +43,31 @@ class VGen:
 
                 for ch in list(line):
                     # print(ch)
-                    if  hasGenerics is False:
-                        if ch == '(':
-                            open_brackets += 1
-                            if open_brackets > 1:
-                                lines.append(ch)
-
-                            # if step_one_done is True:
-                            #     hasGenerics = True
-
-                        elif (ch == ';') and (open_brackets == 0):
-                            step_one_done = True
-
-                        elif (ch == ')') and (open_brackets == 1):
-                            open_brackets -= 1
-                            generics = ports
-                            ports = ''.join(lines)
-
-                            lines = []
-
-                        elif ch == ')':
-                            open_brackets -= 1
+                    if isComment is True:
+                        if ch == '\n':
+                            isComment = False
+                    elif ch == '-':
+                        isComment = True # needed to filter out comments
+                    elif ch == '(':
+                        open_brackets += 1
+                        if open_brackets > 1:
                             lines.append(ch)
+                    elif (ch == ';') and (open_brackets == 0):
+                        step_one_done = True
+                    elif (ch == ')') and (open_brackets == 1):
+                        open_brackets -= 1
+                        generics = ports
+                        ports = ''.join(lines)
+                        print(ports)
+                        lines = []
+                    elif ch == ')':
+                        open_brackets -= 1
+                        lines.append(ch)
+                    elif open_brackets != 0:
+                        lines.append(ch)
 
-                        elif open_brackets != 0:
-                            lines.append(ch)
 
+        # print(ports.split(';'))
         #
         # if hasGenerics is True:
         #     pass

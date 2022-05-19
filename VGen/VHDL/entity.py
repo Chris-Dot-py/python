@@ -19,16 +19,17 @@ class Entity:
     entity       = {'open'  :           'entity {name} is\n',
                     'end'   :           'end entity {name};\n\n'}
     generic      = {'open'  :           '  generic(\n',
+                    'map'   :           '  generic map(\n',
                     'end'   :           '  );\n'}
 
     port         = {'open'  :           '  port(\n',
+                    'map'   :           '  port map(\n',
                     'end'   :           '  );\n'}
 
     component    = {'open'  :           '  component {name} is\n',
                     'end'   :           '  end component {name};\n\n'}
 
-    instance     = {'open'  :           '  {i_name} : {e_name}\n'\
-                                        '  port map(\n',
+    instance     = {'open'  :           '  {i_name} : {e_name}\n',
                     'map'   :           '    {i_port} => {connect_to},\n',
                     'end'   :           '  );\n\n'}
 
@@ -221,14 +222,27 @@ class Entity:
         # instantiations
         for component_name,(component,number_of_instances) in components.items():
             component_ports = component.get_ports()
+            component_generics = component.get_generics()
             if len(component_ports) != 0:
                 if number_of_instances != 0:
                     for i in range(number_of_instances):
                         # {instance name} : {component to instance}
                         self.add_line(Entity.instance['open'].format(i_name = f'{component_name}_{i}_i', e_name = component_name))
 
-                        for index,(port_name,port) in enumerate(list(component_ports.items())):
+                        # generic mapping
+                        if len(component_generics) != 0:
+                            self.add_line(Entity.generic['map'])
+                            for index, (val_name,val_type) in enumerate(list(component_generics.values())):
+                                s = Entity.instance['map'].format(i_port = val_name, connect_to = 'open')
+                                if index == len(component_generics) - 1:
+                                    self.add_line(s.replace(',',''))
+                                else:
+                                    self.add_line(s)
 
+                            self.add_line(Entity.generic['end'])
+                        # port mapping
+                        self.add_line(Entity.port['map'])
+                        for index,(port_name,port) in enumerate(list(component_ports.items())):
                             # {instance_port} => {signal/port}
                             if 'out' in port.get_line():
                                 s = Entity.instance['map'].format(i_port = port_name, connect_to = port_name)

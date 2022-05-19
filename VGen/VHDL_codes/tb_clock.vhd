@@ -38,8 +38,9 @@ architecture tb_clock_arch of tb_clock is
     inverted : boolean
   );
   port(
-    clk : out std_logic;
-    rst_n : out std_logic
+    clk : in std_logic;
+    rst_n : out std_logic;
+    display_out : out std_logic_vector(7 downto 0)
   );
   end component clk_rst;
 
@@ -53,6 +54,7 @@ architecture tb_clock_arch of tb_clock is
   -- counter
   signal count : std_logic_vector(3 downto 0);
   -- clk_rst
+  signal display_out : std_logic_vector(7 downto 0);
 
 begin
 
@@ -67,6 +69,10 @@ begin
   );
 
   counter_0_i : counter
+  generic map(
+    term_cnt => open,
+    inverted => open
+  );
   port map(
     clk => open,
     rst_n => open,
@@ -74,9 +80,14 @@ begin
   );
 
   clk_rst_0_i : clk_rst
+  generic map(
+    len => open,
+    inverted => open
+  );
   port map(
-    clk => clk,
-    rst_n => rst_n
+    clk => open,
+    rst_n => rst_n,
+    display_out => display_out
   );
 
 end architecture;
