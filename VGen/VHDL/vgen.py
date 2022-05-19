@@ -2,31 +2,61 @@ from VHDL import *
 import os
 
 class VGen:
-    def __init__(self):
-        pass
+    """
+    line formats:
+        entity < entity name > is
+          port(
+            < port name > : < direction > std_logic;
+            < port name > : < direction > std_logic_vector( N - 1 downto 0 );
+          );
+        end entity < entity name >;
+    """
+    default_path = r'VHDL_codes'
 
     """
-        scans 1 vhd file, and saves it as an Entity object
+        step 1 : search for entity name
+        step 2 : check if has generics
+            step 2.1 : if has generics, parse generics
+        step 3 : check if has ports
+            step 3.1 : if has ports, parse ports, else do not import
+        step 4 : search for "end entity"
     """
     @staticmethod
     def v_import(vfile):
-        match_open = ('entity','is')
-        match_end = ('end','entity')
-        with open(vfile, mode = 'r') as rfile:
-            done = False
-            while done is not True:
-                line = rfile.readline()
-                if all([word in line for word in match_open]):
-                    open_line = line.split()
-                    entity = Entity(open_line[1])
-                elif ':' in line:
-                    port = line.split()
-                    entity.add_port(Port(port[0],port[2],VGen.get_port_len(line)))
+        open_brackets = 0
+        step_one_done = False
 
-                elif all([word in line for word in match_end]):
-                    done = True
+        line = ''
+        lines = []
+        tmp = ''
+        tmp2 = ''
+        with open(vfile, mode = 'r') as read_file:
+            while ('end' not in line):
+                line = read_file.readline()
+                print(line)
+                for ch in list(line):
+                    print(ch)
+                    if ch == '(':
+                        open_brackets += 1
+                        if open_brackets > 1:
+                            lines.append(ch)
 
-        return entity
+                    elif (ch == ';') and (open_brackets == 0):
+                        step_one_done = True
+
+                    elif (ch == ')') and (open_brackets == 1):
+                        lines.append(ch)
+                        open_brackets -= 1
+                        tmp = ''.join(lines)
+                    elif ch == ')':
+                        open_brackets -= 1
+
+                    elif open_brackets != 0:
+                        lines.append(ch)
+
+        print(tmp)
+        print(step_one_done)
+
 
     @staticmethod
     def v_import_files(directory_path):
@@ -83,7 +113,7 @@ class VGen:
 #     print(port_name)
 #     print(port.get_line())
 
-# imported_entities = VGen.v_import_files(r'C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes')
+# imported_entities = VGen.v_import_files(VGen.default_path)
 #
 # for name,enti in imported_entities.items():
 #     print(enti.get_entity_name())

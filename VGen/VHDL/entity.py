@@ -18,8 +18,8 @@ class Entity:
 
     entity       = {'open'  :           'entity {name} is\n',
                     'end'   :           'end entity {name};\n\n'}
-    generic      = {'open'  :           'generic(\n',
-                    'end'   :           ');\n'}
+    generic      = {'open'  :           '  generic(\n',
+                    'end'   :           '  );\n'}
 
     port         = {'open'  :           '  port(\n',
                     'end'   :           '  );\n'}
@@ -40,7 +40,8 @@ class Entity:
     def __init__(self, entity_name, circuit_type = None):
         self.__entity_name = entity_name
         self.__vhdl_code = []
-        self.__port_body = {} # dictionary, associate port name with port lines
+        self.__generics = {} # {'val_name' : (val_name,val_type)}
+        self.__ports = {} # dictionary, associate port name with port lines
         self.__number_of_inputs = 0
         self.__number_of_outputs = 0
         # {"entity_name" : (Entity, instances)}
@@ -52,7 +53,10 @@ class Entity:
         return self.__entity_name
 
     def get_ports(self):
-        return self.__port_body
+        return self.__ports
+
+    def get_generics(self):
+        return self.__generics
 
     def get_code(self):
         if len(self.__vhdl_code) == 0:
@@ -60,8 +64,12 @@ class Entity:
         else:
             return ''.join([str(item) for item in self.__vhdl_code])
 
+    def add_generics(self,val_name,val_type):
+        self.__generics[val_name] = val_name,val_type
+
+
     def add_port(self, port):
-        self.__port_body[port.get_port_name()] = port
+        self.__ports[port.get_port_name()] = port
         if port.get_direction() == "in" :
             self.__number_of_inputs += 1;
         elif port.get_direction() == "out":
@@ -131,9 +139,22 @@ class Entity:
         self.add_line('\n')
         self.add_line(Entity.entity['open'].format(name = name_placeholder))
 
+        # add generics if theres any
+        generics = self.get_generics()
+        if len(generics) != 0:
+            self.add_line(Entity.generic['open'])
+            for index,(val_name,val_type) in enumerate(generics.values()):
+
+                if index == len(generics) - 1:
+                    self.add_line(f'    {val_name} : {val_type}\n')
+                else:
+                    self.add_line(f'    {val_name} : {val_type};\n')
+
+            self.add_line(Entity.generic['end'])
+
         ports = self.get_ports()
         # write entity ports if there are any
-        if not (self.__number_of_inputs == 0 and self.__number_of_outputs == 0):
+        if  len(ports) != 0:
             self.add_line(Entity.port['open'])
             for index,(port_name,port) in enumerate(ports.items()):
                 if index == len(ports) - 1:
@@ -152,7 +173,20 @@ class Entity:
         if len(components) != 0:
             for component_name,(component,number_of_instances) in components.items():
                 component_ports = component.get_ports()
+                component_generics = component.get_generics()
                 self.add_line(Entity.component['open'].format(name = component_name))
+
+                # generics
+                if len(component_generics) != 0:
+                    self.add_line(Entity.generic['open'])
+                    for index,(val_name,val_type) in enumerate(component_generics.values()):
+
+                        if index == len(component_generics) - 1:
+                            self.add_line(f'    {val_name} : {val_type}\n')
+                        else:
+                            self.add_line(f'    {val_name} : {val_type};\n')
+
+                    self.add_line(Entity.generic['end'])
 
                 if len(component_ports) != 0:  # skip if no ports
                     self.add_line(Entity.port['open'])

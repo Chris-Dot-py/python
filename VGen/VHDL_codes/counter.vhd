@@ -5,6 +5,10 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity counter is
+  generic(
+    term_cnt : integer;
+    inverted : boolean
+  );
   port(
     clk : in std_logic;
     rst_n : in std_logic;
