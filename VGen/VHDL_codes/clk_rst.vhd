@@ -6,6 +6,10 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity clk_rst is
+  generic(
+      len : integer;
+      inverted : boolean
+  );
   port(
     clk : out std_logic;
     rst_n : out std_logic

@@ -25,38 +25,71 @@ class VGen:
     def v_import(vfile):
         open_brackets = 0
         step_one_done = False
-
+        hasGenerics = False
+        generics = ''
+        ports = ''
         line = ''
         lines = []
-        tmp = ''
-        tmp2 = ''
         with open(vfile, mode = 'r') as read_file:
             while ('end' not in line):
                 line = read_file.readline()
-                print(line)
+                # print(line)
+                if 'entity' in line and 'is' in line:
+                    # print(line)
+                    tmp = line.split()
+                    entity = Entity(tmp[1])
+                    # print(entity.get_entity_name())
+
                 for ch in list(line):
-                    print(ch)
-                    if ch == '(':
-                        open_brackets += 1
-                        if open_brackets > 1:
+                    # print(ch)
+                    if  hasGenerics is False:
+                        if ch == '(':
+                            open_brackets += 1
+                            if open_brackets > 1:
+                                lines.append(ch)
+
+                            # if step_one_done is True:
+                            #     hasGenerics = True
+
+                        elif (ch == ';') and (open_brackets == 0):
+                            step_one_done = True
+
+                        elif (ch == ')') and (open_brackets == 1):
+                            open_brackets -= 1
+                            generics = ports
+                            ports = ''.join(lines)
+
+                            lines = []
+
+                        elif ch == ')':
+                            open_brackets -= 1
                             lines.append(ch)
 
-                    elif (ch == ';') and (open_brackets == 0):
-                        step_one_done = True
+                        elif open_brackets != 0:
+                            lines.append(ch)
 
-                    elif (ch == ')') and (open_brackets == 1):
-                        lines.append(ch)
-                        open_brackets -= 1
-                        tmp = ''.join(lines)
-                    elif ch == ')':
-                        open_brackets -= 1
+        #
+        # if hasGenerics is True:
+        #     pass
+        if len(generics) != 0:
+            list_of_generics = list(generics.split(';'))
+            for item in list_of_generics:
+                tmp = item.split()
+                entity.add_generics(tmp[0],tmp[2])
 
-                    elif open_brackets != 0:
-                        lines.append(ch)
+        # print(entity.get_generics())
 
-        print(tmp)
-        print(step_one_done)
+        if len(ports) != 0:
+            list_of_ports = list(ports.split(';'))
+            for item in list_of_ports:
+                tmp = item.split()
+                entity.add_port(Port(tmp[0],tmp[2],VGen.get_port_len(item)))
 
+        # ports_gotten = entity.get_ports()
+        # for item_name,item in ports_gotten.items():
+        #     s = f'port name : {item_name}\nport line : {item.get_line()}\n'
+        #     print(s)
+        return entity
 
     @staticmethod
     def v_import_files(directory_path):

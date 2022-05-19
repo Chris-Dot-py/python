@@ -32,6 +32,17 @@ architecture tb_clock_arch of tb_clock is
   );
   end component counter;
 
+  component clk_rst is
+  generic(
+    len : integer;
+    inverted : boolean
+  );
+  port(
+    clk : out std_logic;
+    rst_n : out std_logic
+  );
+  end component clk_rst;
+
   -- clock
   signal clk : std_logic;
   signal rst_n : std_logic;
@@ -41,6 +52,7 @@ architecture tb_clock_arch of tb_clock is
   signal dummy_port : std_logic_vector(15 downto 0);
   -- counter
   signal count : std_logic_vector(3 downto 0);
+  -- clk_rst
 
 begin
 
@@ -59,6 +71,12 @@ begin
     clk => open,
     rst_n => open,
     count => count
+  );
+
+  clk_rst_0_i : clk_rst
+  port map(
+    clk => clk,
+    rst_n => rst_n
   );
 
 end architecture;

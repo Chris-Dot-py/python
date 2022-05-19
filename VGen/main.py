@@ -21,21 +21,21 @@ def main():
     counter.add_generics('inverted','boolean')
     counter.generate_code()
 
+    clk_rst = VGen.v_import(r'VHDL_codes/clk_rst.vhd')
 
     tb_clock = Testbench(clock)
     tb_clock.add_component(clock)
     tb_clock.add_component(counter)
-    # tb_clock.add_component(clk_rst)
+    tb_clock.add_component(clk_rst)
     tb_clock.instantiate(clock)
     tb_clock.instantiate(counter)
-    # tb_clock.instantiate(clk_rst)
+    tb_clock.instantiate(clk_rst)
     tb_clock.generate_code()
     #
     # clk_rst = Entity('clk_rst')
     # clk_rst.add_port(Port('clk','out',1))
     # clk_rst.add_port(Port('rst_n','out',1))
     # clk_rst.generate_code()
-    clk_rst = VGen.v_import(r'VHDL_codes/counter.vhd')
 
 
 if __name__ == '__main__' :
