@@ -4,10 +4,23 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity tb_clock is
-end entity tb_clock;
+entity tb_top is
+end entity tb_top;
 
-architecture tb_clock_arch of tb_clock is
+architecture tb_top_arch of tb_top is
+
+  component clk_Rst is
+  generic(
+    clk_prd : integer
+  );
+  port(
+    clk : out std_logic;
+    input_one : in std_logic;
+    input_two : in std_logic;
+    rst : out std_logic;
+    custom_signal : in std_logic
+  );
+  end component clk_Rst;
 
   component clock is
   port(
@@ -32,31 +45,30 @@ architecture tb_clock_arch of tb_clock is
   );
   end component counter;
 
-  component clk_rst is
-  generic(
-    len : integer;
-    inverted : boolean
-  );
-  port(
-    clk : in std_logic;
-    rst_n : out std_logic;
-    display_out : out std_logic_vector(7 downto 0)
-  );
-  end component clk_rst;
-
-  -- clock
+  -- clk_Rst
   signal clk : std_logic;
-  signal rst_n : std_logic;
+  signal rst : std_logic;
+  -- clock
   signal seconds : std_logic_vector(5 downto 0);
   signal minutes : std_logic_vector(5 downto 0);
   signal hours : std_logic_vector(4 downto 0);
   signal dummy_port : std_logic_vector(15 downto 0);
   -- counter
   signal count : std_logic_vector(3 downto 0);
-  -- clk_rst
-  signal display_out : std_logic_vector(7 downto 0);
 
 begin
+
+  clk_Rst_0_i : clk_Rst
+  generic map(
+    clk_prd => open
+  );
+  port map(
+    clk => clk,
+    input_one => open,
+    input_two => open,
+    rst => rst,
+    custom_signal => open
+  );
 
   clock_0_i : clock
   port map(
@@ -77,17 +89,6 @@ begin
     clk => open,
     rst_n => open,
     count => count
-  );
-
-  clk_rst_0_i : clk_rst
-  generic map(
-    len => open,
-    inverted => open
-  );
-  port map(
-    clk => open,
-    rst_n => rst_n,
-    display_out => display_out
   );
 
 end architecture;

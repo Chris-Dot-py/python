@@ -1,0 +1,156 @@
+m255
+K4
+z2
+!s11e vcom 2020.1 2020.02, Feb 28 2020
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/Users/Christian/Desktop/Python/python/VGen/Modelsim
+Eclk_rst
+Z1 w1652995122
+Z2 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z3 DPx4 ieee 14 std_logic_1164 0 22 cVAk:aDinOX8^VGI1ekP<3
+!i122 0
+R0
+Z4 8C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/clk_rst.vhd
+Z5 FC:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/clk_rst.vhd
+l0
+L7 1
+VE?=X[hQXK7m3QG:0ndUaH2
+!s100 eQ=H1WH79XP^BkkgY2>1C3
+Z6 OV;C;2020.1;71
+32
+Z7 !s110 1653078876
+!i10b 1
+Z8 !s108 1653078876.000000
+Z9 !s90 -reportprogress|300|-work|work|C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/clk_rst.vhd|
+Z10 !s107 C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/clk_rst.vhd|
+!i113 1
+Z11 o-work work
+Z12 tExplicit 1 CvgOpt 0
+Aclk_rst_arch
+R2
+R3
+DEx4 work 7 clk_rst 0 22 E?=X[hQXK7m3QG:0ndUaH2
+!i122 0
+l20
+L17 6
+VaDB=CjaiJ>U;9IgZ^ZO;l2
+!s100 z93B3ozePQ7VTL_230Y[h0
+R6
+32
+R7
+!i10b 1
+R8
+R9
+R10
+!i113 1
+R11
+R12
+Eclock
+R1
+R2
+R3
+!i122 1
+R0
+Z13 8C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/clock.vhd
+Z14 FC:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/clock.vhd
+l0
+L7 1
+VLiZPigZae329R`3QlC0[Y1
+!s100 hi@Rb?Y7n2Yl1R5Jmk3Cd2
+R6
+32
+Z15 !s110 1653078877
+!i10b 1
+R8
+Z16 !s90 -reportprogress|300|-work|work|C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/clock.vhd|
+Z17 !s107 C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/clock.vhd|
+!i113 1
+R11
+R12
+Aclock_arch
+R2
+R3
+DEx4 work 5 clock 0 22 LiZPigZae329R`3QlC0[Y1
+!i122 1
+l21
+L18 6
+VP32X7]o5kDVL@_nZ^N:VH2
+!s100 >YSlV^h6DKOnggVOz0:eR1
+R6
+32
+R15
+!i10b 1
+R8
+R16
+R17
+!i113 1
+R11
+R12
+Ecounter
+R1
+R2
+R3
+!i122 2
+R0
+Z18 8C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/counter.vhd
+Z19 FC:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/counter.vhd
+l0
+L7 1
+VlV=PgoWEc8NUW^A=8`dom0
+!s100 l3I0SMTBfLJkJjO3a@Yh@1
+R6
+32
+R15
+!i10b 1
+Z20 !s108 1653078877.000000
+Z21 !s90 -reportprogress|300|-work|work|C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/counter.vhd|
+Z22 !s107 C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/counter.vhd|
+!i113 1
+R11
+R12
+Acounter_arch
+R2
+R3
+DEx4 work 7 counter 0 22 lV=PgoWEc8NUW^A=8`dom0
+!i122 2
+l22
+L19 6
+VI7o2j_3UI@1DBNLY62?HB0
+!s100 Y>Z6gT<Qo;21j:nnP^^BT2
+R6
+32
+R15
+!i10b 1
+R20
+R21
+R22
+!i113 1
+R11
+R12
+Etb_top
+w1652995525
+R2
+R3
+!i122 3
+R0
+8C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/tb_top.vhd
+FC:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/tb_top.vhd
+l0
+L7 1
+Va@oWCeJ[jEU25GE@<Hd7b0
+!s100 mP8E[]KMaFRl[UYNjfML21
+R6
+32
+R15
+!i10b 1
+R20
+!s90 -reportprogress|300|-work|work|C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/tb_top.vhd|
+!s107 C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/tb_top.vhd|
+!i113 1
+R11
+R12

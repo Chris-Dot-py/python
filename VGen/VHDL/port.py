@@ -4,7 +4,7 @@ class Port:
         self.direction = direction
         self.length = length
         if self.length > 1:
-            self.line = f"    {self.port_name} : {self.direction} std_logic_vector({length - 1} downto 0);\n"
+            self.line = f"    {self.port_name} : {self.direction} std_logic_vector({self.length - 1} downto 0);\n"
         else:
             self.line = f"    {self.port_name} : {self.direction} std_logic;\n"
 

@@ -22,7 +22,8 @@ class VGen:
         step 4 : search for "end entity"
     """
     @staticmethod
-    def v_import(vfile):
+    def vimport(vfile):
+        found_entity_name = False
         open_brackets = 0
         step_one_done = False
         hasGenerics = False
@@ -34,15 +35,16 @@ class VGen:
         with open(vfile, mode = 'r') as read_file:
             while ('end' not in line):
                 line = read_file.readline()
-                # print(line)
-                if 'entity' in line and 'is' in line:
-                    # print(line)
-                    tmp = line.split()
-                    entity = Entity(tmp[1])
-                    # print(entity.get_entity_name())
+
+                if found_entity_name is False:
+                    line_list = line.split()
+                    for index,item in enumerate(line_list):
+                        if item.lower() == 'entity':
+                            entity = Entity(line_list[index + 1])
+                            found_entity_name = True
+
 
                 for ch in list(line):
-                    # print(ch)
                     if isComment is True:
                         if ch == '\n':
                             isComment = False
@@ -66,39 +68,42 @@ class VGen:
                     elif open_brackets != 0:
                         lines.append(ch)
 
-
-        # print(ports.split(';'))
-        #
-        # if hasGenerics is True:
-        #     pass
         if len(generics) != 0:
             list_of_generics = list(generics.split(';'))
+            print(list_of_generics)
             for item in list_of_generics:
                 tmp = item.split()
+                # print(tmp)
                 entity.add_generics(tmp[0],tmp[2])
 
-        # print(entity.get_generics())
-
         if len(ports) != 0:
+            is_std_logic_vector = False
+            is_std_logic = False
+            is_custom_type = False
+            port_len = 0
+
             list_of_ports = list(ports.split(';'))
+            print(list_of_ports)
             for item in list_of_ports:
                 tmp = item.split()
-                entity.add_port(Port(tmp[0],tmp[2],VGen.get_port_len(item)))
+                print(tmp)
+                print(VGen.get_port_len(item))
 
-        # ports_gotten = entity.get_ports()
-        # for item_name,item in ports_gotten.items():
-        #     s = f'port name : {item_name}\nport line : {item.get_line()}\n'
-        #     print(s)
+                port_name = tmp[0]
+                port_dir = tmp[2]
+
+                entity.add_port(Port(port_name,port_dir,VGen.get_port_len(item)))
+
         return entity
 
     @staticmethod
-    def v_import_files(directory_path):
+    def vimport_files(directory_path):
         files = os.listdir(directory_path)
         path = directory_path + '/'
         entities = {}
         for file in files:
             file_path = path + ''.join(file)
-            imported_entity = VGen.v_import(file_path)
+            imported_entity = VGen.vimport(file_path)
             entities[imported_entity.get_entity_name()] = imported_entity
 
         return entities
@@ -109,7 +114,7 @@ class VGen:
         numbers_found = []
         canParse = False
         foundANumber = False
-        for ch in list(line):
+        for i,ch in enumerate(list(line)):
             if ch == ':':
                 canParse = True
             elif canParse is True:
@@ -120,6 +125,8 @@ class VGen:
                 else:
                     if ch.isdigit():
                         num.append(ch)
+                        if i == len(line)-1:
+                            numbers_found.append(int(''.join(num)))
                     else:
                         numbers_found.append(int(''.join(num)))
                         num = []
@@ -129,24 +136,3 @@ class VGen:
             return 1
         else:
             return (numbers_found[0]+1) - numbers_found[1]
-
-    def quick_test(self, clk_freq, DUT):
-        pass
-        # generates tb_top file with indicated clock frequency and reset
-        # with a declared component and port mapped black_box clocked entity
-        # if file is imported (indicated path file), declares imported file and
-        # port maps it.
-#
-# file = r'VHDL_codes\clock.vhd'
-#
-# entity = VGen.v_import(file)
-# print(entity.get_entity_name())
-# ports = entity.get_ports()
-# for port_name, port in list(ports.items()):
-#     print(port_name)
-#     print(port.get_line())
-
-# imported_entities = VGen.v_import_files(VGen.default_path)
-#
-# for name,enti in imported_entities.items():
-#     print(enti.get_entity_name())

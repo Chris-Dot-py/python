@@ -4,7 +4,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity clock is
+ENTITY clock is
   port(
     clk : in std_logic;
     rst_n : in std_logic;

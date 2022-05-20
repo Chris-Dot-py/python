@@ -1,0 +1,71 @@
+# Reading pref.tcl
+pwd
+# C:/Users/Christian/Desktop/Python/python/VGen/Modelsim
+ls
+# transcript                
+dir
+#  Volume in drive C has no label.
+#  Volume Serial Number is EA65-095E
+# 
+#  Directory of C:\Users\Christian\Desktop\Python\python\VGen\Modelsim
+# 
+# 05/20/2022  10:33 PM    <DIR>          .
+# 05/20/2022  10:33 PM    <DIR>          ..
+# 05/20/2022  10:34 PM                87 transcript
+#                1 File(s)             87 bytes
+#                2 Dir(s)  20,901,822,464 bytes free
+vlib work
+vcom -reportprogress 300 -work work C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/clk_rst.vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 22:34:36 on May 20,2022
+# vcom -reportprogress 300 -work work C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/clk_rst.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling entity clk_rst
+# -- Compiling architecture clk_rst_arch of clk_rst
+# End time: 22:34:36 on May 20,2022, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+vcom -reportprogress 300 -work work C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/clock.vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 22:34:36 on May 20,2022
+# vcom -reportprogress 300 -work work C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/clock.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling entity clock
+# -- Compiling architecture clock_arch of clock
+# End time: 22:34:37 on May 20,2022, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+vcom -reportprogress 300 -work work C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/counter.vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 22:34:37 on May 20,2022
+# vcom -reportprogress 300 -work work C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/counter.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling entity counter
+# -- Compiling architecture counter_arch of counter
+# End time: 22:34:37 on May 20,2022, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+vcom -reportprogress 300 -work work C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/tb_top.vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 22:34:37 on May 20,2022
+# vcom -reportprogress 300 -work work C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/tb_top.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling entity tb_top
+# -- Compiling architecture tb_top_arch of tb_top
+# ** Error: C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/tb_top.vhd(61): (vcom-1031) Formal generic "clk_prd" has OPEN or no actual associated with it.
+# ** Error: C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/tb_top.vhd(63): near "port": syntax error
+# ** Error: C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/tb_top.vhd(70): (vcom-1035) Formal port "clk" has OPEN or no actual associated with it.
+# ** Error: C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/tb_top.vhd(71): (vcom-1035) Formal port "rst_n" has OPEN or no actual associated with it.
+# ** Error: C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/tb_top.vhd(80): (vcom-1031) Formal generic "term_cnt" has OPEN or no actual associated with it.
+# ** Error: C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/tb_top.vhd(81): (vcom-1031) Formal generic "inverted" has OPEN or no actual associated with it.
+# ** Error: C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/tb_top.vhd(82): (vcom-1035) Formal port "clk" has OPEN or no actual associated with it.
+# ** Error: C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/tb_top.vhd(82): (vcom-1035) Formal port "rst_n" has OPEN or no actual associated with it.
+# ** Error: C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/tb_top.vhd(83): near "port": syntax error
+# ** Note: C:/Users/Christian/Desktop/Python/python/VGen/VHDL_codes/tb_top.vhd(89): VHDL Compiler exiting
+# End time: 22:34:37 on May 20,2022, Elapsed time: 0:00:00
+# Errors: 9, Warnings: 0

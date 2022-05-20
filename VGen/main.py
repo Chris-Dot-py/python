@@ -1,43 +1,20 @@
 from VHDL import *
+import sys
 
 def main():
+    if len(sys.argv) != 2:
+        print('\nUsage : .\main.py <directory_name>\n')
+    else:
+        imported_entities = VGen.vimport_files(sys.argv[1])
 
-    clock = Entity('clock') # entry
+        tb_clock = Testbench('top')
 
-    # button commands
-    clock.add_port(Port('clk','in',1))
-    clock.add_port(Port('rst_n','in',1))
-    clock.add_port(Port('seconds','out',6))
-    clock.add_port(Port('minutes','out',6))
-    clock.add_port(Port('hours','out',5))
-    clock.add_port(Port('dummy_port','out',16))
-    clock.generate_code()
+        for entity in imported_entities.values():
+            tb_clock.add_component(entity)
+            tb_clock.instantiate(entity)
 
-    counter = Entity('counter')
-    counter.add_port(Port('clk','in',1))
-    counter.add_port(Port('rst_n','in',1))
-    counter.add_port(Port('count','out',4))
-    counter.add_generics('term_cnt','integer')
-    counter.add_generics('inverted','boolean')
-    counter.generate_code()
-
-    clk_rst = VGen.v_import(r'VHDL_codes/clk_rst.vhd')
-
-    tb_clock = Testbench(clock)
-    tb_clock.add_component(clock)
-    tb_clock.add_component(counter)
-    tb_clock.add_component(clk_rst)
-    tb_clock.instantiate(clock)
-    tb_clock.instantiate(counter)
-    tb_clock.instantiate(clk_rst)
-    tb_clock.generate_code()
-    #
-    # clk_rst = Entity('clk_rst')
-    # clk_rst.add_port(Port('clk','out',1))
-    # clk_rst.add_port(Port('rst_n','out',1))
-    # clk_rst.generate_code()
+        tb_clock.generate_code()
 
 
 if __name__ == '__main__' :
-    # print(__name__)
     main()

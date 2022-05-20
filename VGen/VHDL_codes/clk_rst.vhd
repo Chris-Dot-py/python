@@ -3,67 +3,25 @@
 -- -=#=-=#=-=#=-=#=-=#=-=#=-=#=-=#=-=#=-=#=-=#=-=#=- --
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
 
-entity clk_rst is
+Entity clk_Rst is
   generic(
-      --
-      len : integer := 8;
-      -- comment
-      inverted : boolean := False
-      --
-      -- commet
+    -- comment here
+    clk_prd : integer -- comment
+    -- comment
   );
   port(
-    -- comment here
-    clk : in std_logic; -- clock
-    -- comment here
-    rst_n : out std_logic; -- low active reset
-    display_out : out std_logic_vector(7 downto 0)
-    -- comment here
+    clk : out std_logic;
+    input_one : in std_logic;
+    input_two : in std_logic;
+    rst : out std_logic;
+    custom_signal : in t_tyasdpe
   );
-end entity clk_rst;
+end entity clk_Rst;
 
 architecture clk_rst_arch of clk_rst is
 
-    constant c_clock_period : time := clk_period;
-    constant c_release_rst_at : time := release_rst_at;
-    constant c_is_low_active_rst : boolean := is_low_active_rst;
 
-    type outgoing is record
-        rst_n : std_logic;
-        clk : std_logic;
-    end record;
-
-    signal o : outgoing;
 begin
-
-    p_gen : process
-    begin
-        o.clk <= '0';
-        wait for c_clock_period/2;
-        o.clk <= '1';
-        wait for c_clock_period/2;
-    end process;
-
-    low_active_rst : if c_is_low_active_rst generate
-        p_rst : process
-        begin
-            rst_n <= '0';
-            wait for c_release_rst_at;
-            rst_n <= '1';
-            wait;
-        end process;
-    end generate low_active_rst;
-
-    low_active_rst : if not c_is_low_active_rst generate
-        p_rst : process
-        begin
-            rst_n <= '1';
-            wait for c_release_rst_at;
-            rst_n <= '0';
-            wait;
-        end process;
-    end generate low_active_rst;
 
 end architecture;

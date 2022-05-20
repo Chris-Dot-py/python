@@ -208,12 +208,16 @@ class Entity:
             self.add_line(f'  -- {component_name}\n')
             for port_name, port in component_ports.items():
 
-                if port_name not in self.__declared_signals:
-                    if port.get_direction() == 'in':
-                        self.add_line(port.get_line().replace('    ','  signal ').replace(' in', ''))
+                # the declared signals are ordered in a way that only the outputs for each block are declared
+                if (port_name not in self.__declared_signals) and (port.get_direction() == 'out'):
+                    s1 = f'  signal {port_name} : std_logic_vector({port.get_length()-1} downto 0);\n'
+                    s2 = f'  signal {port_name} : std_logic;\n'
+
+                    if port.get_length() != 1:
+                        self.add_line(s1)
                         self.__declared_signals.add(port_name)
-                    elif port.get_direction() == 'out':
-                        self.add_line(port.get_line().replace('    ','  signal ').replace(' out', ''))
+                    else:
+                        self.add_line(s2)
                         self.__declared_signals.add(port_name)
 
         # architecture begin
