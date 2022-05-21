@@ -3,10 +3,14 @@ class Port:
         self.port_name = port_name
         self.direction = direction
         self.length = length
-        if self.length > 1:
-            self.line = f"    {self.port_name} : {self.direction} std_logic_vector({self.length - 1} downto 0);\n"
+
+        if type(length) == type(1):
+            if self.length > 1:
+                self.line = f"    {self.port_name} : {self.direction} std_logic_vector({self.length - 1} downto 0);\n"
+            else:
+                self.line = f"    {self.port_name} : {self.direction} std_logic;\n"
         else:
-            self.line = f"    {self.port_name} : {self.direction} std_logic;\n"
+            self.line = f"    {self.port_name} : {self.direction} {length};\n"
 
         self.isConnected = False
         self.number_of_connections = 0

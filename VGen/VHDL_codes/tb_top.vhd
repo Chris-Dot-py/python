@@ -18,7 +18,7 @@ architecture tb_top_arch of tb_top is
     input_one : in std_logic;
     input_two : in std_logic;
     rst : out std_logic;
-    custom_signal : in std_logic
+    custom_signal : out t_tyasdpe
   );
   end component clk_Rst;
 
@@ -48,6 +48,7 @@ architecture tb_top_arch of tb_top is
   -- clk_Rst
   signal clk : std_logic;
   signal rst : std_logic;
+  signal custom_signal : t_tyasdpe;
   -- clock
   signal seconds : std_logic_vector(5 downto 0);
   signal minutes : std_logic_vector(5 downto 0);
@@ -67,7 +68,7 @@ begin
     input_one => open,
     input_two => open,
     rst => rst,
-    custom_signal => open
+    custom_signal => custom_signal
   );
 
   clock_0_i : clock

@@ -210,7 +210,11 @@ class Entity:
 
                 # the declared signals are ordered in a way that only the outputs for each block are declared
                 if (port_name not in self.__declared_signals) and (port.get_direction() == 'out'):
-                    s1 = f'  signal {port_name} : std_logic_vector({port.get_length()-1} downto 0);\n'
+                    if type(port.get_length()) == type(1):
+                        s1 = f'  signal {port_name} : std_logic_vector({port.get_length()-1} downto 0);\n'
+                    else:
+                        s1 = f'  signal {port_name} : {port.get_length()};\n'
+
                     s2 = f'  signal {port_name} : std_logic;\n'
 
                     if port.get_length() != 1:
@@ -219,6 +223,7 @@ class Entity:
                     else:
                         self.add_line(s2)
                         self.__declared_signals.add(port_name)
+
 
         # architecture begin
         self.add_line(Entity.architecture['begin'])

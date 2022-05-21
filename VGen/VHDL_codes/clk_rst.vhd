@@ -15,7 +15,7 @@ Entity clk_Rst is
     input_one : in std_logic;
     input_two : in std_logic;
     rst : out std_logic;
-    custom_signal : in t_tyasdpe
+    custom_signal : out t_tyasdpe
   );
 end entity clk_Rst;
 
