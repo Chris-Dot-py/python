@@ -25,9 +25,6 @@ class VGen:
     def vimport(vfile):
         found_entity_name = False
         open_brackets = 0
-        step_one_done = False
-        hasGenerics = False
-        isComment = False
         generics = ''
         ports = ''
         line = ''
@@ -44,75 +41,34 @@ class VGen:
                             found_entity_name = True
 
                 for ch in list(line):
-                    if isComment is True:
-                        if ch == '\n':
-                            isComment = False
-                    elif ch == '-':
-                        isComment = True # needed to filter out comments
-                    elif ch == '(':
-                        open_brackets += 1
-                        if open_brackets > 1:
+                    if ch == '(':
+                        if open_brackets == 0:
+                            open_brackets += 1
+                        else:
+                            open_brackets += 1
                             lines.append(ch)
-                    elif (ch == ';') and (open_brackets == 0):
-                        step_one_done = True
-                    elif (ch == ')') and (open_brackets == 1):
-                        open_brackets -= 1
-                        generics = ports
-                        ports = ''.join(lines)
-                        # print(ports)
-                        lines = []
                     elif ch == ')':
-                        open_brackets -= 1
-                        lines.append(ch)
-                    elif open_brackets != 0:
+                        if open_brackets == 1:
+                            open_brackets -= 1
+                            generics = ports
+                            ports = ''.join(lines)
+                            lines = []
+                            # print(ports)
+                        else:
+                            open_brackets -= 1
+                            lines.append(ch)
+                    elif open_brackets >= 1:
                         lines.append(ch)
 
+        s = f'entity : {entity.get_entity_name()}\n'
+        print(s)
         if len(generics) != 0:
-            list_of_generics = list(generics.split(';'))
-            # print(list_of_generics)
-            for item in list_of_generics:
-                tmp = item.split()
-                # print(tmp)
-                entity.add_generics(tmp[0],tmp[2])
-        """
-            each port declaration has 4 items:
-                1) port name
-                2) semi-colon ':'
-                3) port direction
-                4) port type
-        """
+            s = f' generics :\n{generics}'
+            print(s)
+
         if len(ports) != 0:
-            port_name = ''
-            port_dir = ''
-            port_type = ''
-            port_len = 0
-            s = ''
-
-            list_of_ports = list(ports.split(';'))
-            # print(list_of_ports)
-            for item in list_of_ports:
-                tmp = item.split()
-                # print(tmp)
-
-                port_name = tmp[0]
-                port_dir = tmp[2]
-                port_type = ''.join(tmp[3:])
-
-                for x in list(tmp):
-                    if x.lower() == 'downto': # if this is true, its a bit vector
-                        # print(VGen.get_port_len(port_type))
-                        s = f'  {port_name} : {port_dir} std_logic_vector({VGen.get_port_len(port_type) - 1} downto 0);\n'
-                        port_type = VGen.get_port_len(port_type)
-                        break
-                    elif x.lower() == 'std_logic':
-                        s = f'  {port_name} : {port_dir} std_logic;\n'
-                        port_type = 1
-                        break
-                    else:
-                        s = f'  {port_name} : {port_dir} {port_type};\n'
-
-                print(s)
-                entity.add_port(Port(port_name,port_dir,port_type))
+            s = f' ports :\n{ports}'
+            print(s)
 
 
         return entity

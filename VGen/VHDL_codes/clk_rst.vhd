@@ -7,15 +7,20 @@ use ieee.std_logic_1164.all;
 Entity clk_Rst is
   generic(
     -- comment here
-    clk_prd : integer -- comment
+    clk_prd : integer := 21 -- comment
     -- comment
   );
   port(
-    clk : out std_logic;
+    clk : in std_logic;
     input_one : in std_logic;
     input_two : in std_logic;
-    rst : out std_logic;
-    custom_signal : out t_tyasdpe
+    rst : in std_logic;
+    -- comments
+    bit_Vector_signal : out std_logic_vector(63 downto 0); -- comment her
+    custom_signal : out t_tyasdpe; -- comment here
+    -- custom_signal_three : out std_logic_vector(byte_len-1 downto 0);
+    -- comment here
+    custom_signal_too : out t_type_no_two -- comment here
   );
 end entity clk_Rst;
 
