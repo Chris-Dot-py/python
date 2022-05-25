@@ -18,11 +18,11 @@ architecture tb_top_arch of tb_top is
     input_one : in std_logic;
     input_two : in std_logic;
     rst : in std_logic;
-    bit_Vector_signal : out std_logic_vector;
+    bit_Vector_signal : out std_logic_vector(63 downto 0);
     custom_signal : out t_tyasdpe;
-    custom_signal_three : out std_logic_vector;
-    custom_signal_four : out unsigned;
-    custom_signal_five : out signed;
+    custom_signal_three : out std_logic_vector((byte_len)-1 downto 0);
+    custom_signal_four : out unsigned((byte_len)-1 downto 0);
+    custom_signal_five : out signed((((byte_len)*(ASD))/2)-1 downto 0);
     custom_signal_too : out t_type_no_two;
     test : out std_logic
   );
@@ -32,10 +32,10 @@ architecture tb_top_arch of tb_top is
   port(
     clk : in std_logic;
     rst_n : in std_logic;
-    seconds : out std_logic_vector;
-    minutes : out std_logic_vector;
-    hours : out std_logic_vector;
-    dummy_port : out std_logic_vector
+    seconds : out std_logic_vector(5 downto 0);
+    minutes : out std_logic_vector(5 downto 0);
+    hours : out std_logic_vector(4 downto 0);
+    dummy_port : out std_logic_vector(15 downto 0)
   );
   end component clock;
 
@@ -47,25 +47,25 @@ architecture tb_top_arch of tb_top is
   port(
     clk : in std_logic;
     rst_n : in std_logic;
-    count : out std_logic_vector
+    count : out std_logic_vector(3 downto 0)
   );
   end component counter;
 
   -- clk_Rst
-  signal bit_Vector_signal : std_logic_vector;
+  signal bit_Vector_signal : std_logic_vector(63 downto 0);
   signal custom_signal : t_tyasdpe;
-  signal custom_signal_three : std_logic_vector;
-  signal custom_signal_four : unsigned;
-  signal custom_signal_five : signed;
+  signal custom_signal_three : std_logic_vector((byte_len)-1 downto 0);
+  signal custom_signal_four : unsigned((byte_len)-1 downto 0);
+  signal custom_signal_five : signed((((byte_len)*(ASD))/2)-1 downto 0);
   signal custom_signal_too : t_type_no_two;
   signal test : std_logic;
   -- clock
-  signal seconds : std_logic_vector;
-  signal minutes : std_logic_vector;
-  signal hours : std_logic_vector;
-  signal dummy_port : std_logic_vector;
+  signal seconds : std_logic_vector(5 downto 0);
+  signal minutes : std_logic_vector(5 downto 0);
+  signal hours : std_logic_vector(4 downto 0);
+  signal dummy_port : std_logic_vector(15 downto 0);
   -- counter
-  signal count : std_logic_vector;
+  signal count : std_logic_vector(3 downto 0);
 
 begin
 

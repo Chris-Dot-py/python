@@ -87,17 +87,17 @@ class Entity:
     def get_components(self):
         return self.__components
 
-    """
-        Can add the import function to this
-    """
-    def add_ports(self, num_of_inputs = 1, num_of_outputs = 1):
-        for i in range(num_of_inputs):
-            self.add_port(Port(f'input_{i}','in',1))
-            self.__number_of_inputs += 1
-
-        for i in range(num_of_outputs):
-            self.add_port(Port(f'output_{i}','out',1))
-            self.__number_of_outputs += 1
+    # """
+    #     Can add the import function to this
+    # """
+    # def add_ports(self, type, num_of_inputs = 1, num_of_outputs = 1):
+    #     for i in range(num_of_inputs):
+    #         self.add_port(Port(f'input_{i}','in',1))
+    #         self.__number_of_inputs += 1
+    #
+    #     for i in range(num_of_outputs):
+    #         self.add_port(Port(f'output_{i}','out',1))
+    #         self.__number_of_outputs += 1
 
     def add_component(self, entity):
         entity_name = entity.get_entity_name()
@@ -211,18 +211,15 @@ class Entity:
                 # the declared signals are ordered in a way that only the outputs for each block are declared
                 if (port_name not in self.__declared_signals) and (port.get_direction() == 'out'):
                     if type(port.get_length()) == type(1):
-                        s1 = f'  signal {port_name} : std_logic_vector({port.get_length()-1} downto 0);\n'
+                        if port.get_length() > 1:
+                            s = f'  signal {port_name} : {port.get_type()}({port.get_length()-1} downto 0);\n'
+                        else:
+                            s = f'  signal {port_name} : {port.get_type()};\n'
                     else:
-                        s1 = f'  signal {port_name} : {port.get_length()};\n'
+                        s = f'  signal {port_name} : {port.get_type()}({port.get_length()} downto 0);\n'
 
-                    s2 = f'  signal {port_name} : std_logic;\n'
-
-                    if port.get_length() != 1:
-                        self.add_line(s1)
-                        self.__declared_signals.add(port_name)
-                    else:
-                        self.add_line(s2)
-                        self.__declared_signals.add(port_name)
+                    self.add_line(s)
+                    self.__declared_signals.add(port_name)
 
 
         # architecture begin

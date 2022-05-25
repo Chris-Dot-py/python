@@ -176,14 +176,17 @@ class VGen:
                     port_type = VGen.get_type(x)
                     vec_len = VGen.get_len(x)
                     if vec_len.isdigit():
+                        port_len = int(vec_len) + 1
                         print(f'length is fixed : lentgh = {int(vec_len) + 1}')
                     else:
+                        port_len = vec_len
                         print(f'has an expression : lentgh_exp = {vec_len}')
                     isvector = False
+                    entity.add_port(Port(port_len,port_name,port_dir,port_type))
                 else:
                     port_type = tmp_2[3]
+                    entity.add_port(Port(1,port_name,port_dir,port_type))
 
-                entity.add_port(Port(port_name,port_dir,port_type))
 
                 print(port_name)
                 print(port_dir)
