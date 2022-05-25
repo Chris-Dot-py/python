@@ -29,6 +29,21 @@ class VGen:
         ports = ''
         line = ''
         lines = []
+
+        comment = []
+        comments = {}
+
+        generics_tmp = {}
+        isComment = False
+        maybeComment = False
+
+        gen_comments = []
+        port_comments = []
+
+        gen_nls = 0
+        port_nls = 0
+        num_of_newlines = 0
+
         with open(vfile, mode = 'r') as read_file:
             while ('end' not in line):
                 line = read_file.readline()
@@ -41,7 +56,37 @@ class VGen:
                             found_entity_name = True
 
                 for ch in list(line):
-                    if ch == '(':
+
+                    # newline counter
+                    if ch == '\n':
+                        if open_brackets >= 1:
+                            num_of_newlines += 1
+
+                    # comment parser
+                    if isComment is True:
+                        if ch == '\n':
+                            isComment = False
+                            maybeComment = False
+                            # print(type(comments))
+                            comments[str(num_of_newlines-1)] = ''.join(comment)
+                            comment = []
+                        else:
+                            comment.append(ch)
+                    elif maybeComment is True:
+                        if ch == '-':
+                            isComment = True
+                        else:
+                            maybeComment = False
+                            lines.append(ch_tmp)
+                            lines.append(ch)
+
+                    elif ch == '-' and open_brackets >= 1:
+                        maybeComment = True
+                        ch_tmp = ch
+
+
+                    # port parser
+                    elif ch == '(':
                         if open_brackets == 0:
                             open_brackets += 1
                         else:
@@ -52,7 +97,18 @@ class VGen:
                             open_brackets -= 1
                             generics = ports
                             ports = ''.join(lines)
+
+                            gen_comments = port_comments
+                            port_comments = comments
+
+                            gen_nls = port_nls
+                            port_nls = num_of_newlines
+
                             lines = []
+                            comments = {}
+                            num_of_newlines = 0
+
+
                             # print(ports)
                         else:
                             open_brackets -= 1
@@ -60,16 +116,81 @@ class VGen:
                     elif open_brackets >= 1:
                         lines.append(ch)
 
+
+
         s = f'entity : {entity.get_entity_name()}\n'
         print(s)
+        # generics
         if len(generics) != 0:
             s = f' generics :\n{generics}'
             print(s)
 
+            # comment = []
+            # comments = {}
+            # generics_tmp = {}
+            # isComment = False
+            # maybeComment = False
+            #
+            # num_of_newlines = 0
+            #
+            # for ch in list(generics):
+            #     # newline counter
+            #     if ch == '\n':
+            #         num_of_newlines += 1
+            #
+            #     # comment parser
+            #     if isComment is True:
+            #         if ch == '\n':
+            #             isComment = False
+            #             maybeComment = False
+            #             comments[str(num_of_newlines-1)] = ''.join(comment)
+            #             comment = []
+            #         else:
+            #             comment.append(ch)
+            #     elif maybeComment is True:
+            #         if ch == '-':
+            #             isComment = True
+            #         else:
+            #             maybeComment = False
+            #     elif ch == '-':
+            #         maybeComment = True
+            print(gen_comments)
+
+
+        # ports
         if len(ports) != 0:
             s = f' ports :\n{ports}'
             print(s)
 
+            # comment = []
+            # comments = {}
+            # isComment = False
+            # maybeComment = False
+            #
+            # num_of_newlines = 0
+            #
+            # for ch in list(ports):
+            #     # newline counter
+            #     if ch == '\n':
+            #         num_of_newlines += 1
+            #
+            #     # comment parser
+            #     if isComment is True:
+            #         if ch == '\n':
+            #             isComment = False
+            #             maybeComment = False
+            #             comments[str(num_of_newlines-1)] = ''.join(comment)
+            #             comment = []
+            #         else:
+            #             comment.append(ch)
+            #     elif maybeComment is True:
+            #         if ch == '-':
+            #             isComment = True
+            #         else:
+            #             maybeComment = False
+            #     elif ch == '-':
+            #         maybeComment = True
+            print(port_comments)
 
         return entity
 

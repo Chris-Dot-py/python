@@ -11,6 +11,8 @@ Entity clk_Rst is
     -- comment
   );
   port(
+    -- comment ---
+    -- comment ----
     clk : in std_logic;
     input_one : in std_logic;
     input_two : in std_logic;
