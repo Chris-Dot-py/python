@@ -137,14 +137,58 @@ class VGen:
         # generics
         if len(generics) != 0:
             s = f' generics :\n{generics}'
-            # print(s)
-            # print(gen_comments)
+            print(s)
+            print(gen_comments)
+            tmp = generics.split(';')
+            for i,x in enumerate(tmp):
+                # sss = f'{i} : {x}'
+                # print(sss)
+                tmp_2 = x.split()
+                print(tmp_2)
+                entity.add_generics(tmp_2[0],tmp_2[2])
+
 
         # ports
+        isvector = False
+        vec_len = ''
         if len(ports) != 0:
             s = f' ports :\n{ports}'
-            # print(s)
-            # print(port_comments)
+            print(s)
+            print(port_comments)
+
+            tmp = ports.split(';')
+            for i,x in enumerate(tmp):
+                # sss = f'{i} : {x}'
+                # print(sss)
+
+                tmp_2 = x.split()
+                print(tmp_2)
+
+                port_name = tmp_2[0]
+                port_dir = tmp_2[2]
+
+                for i,y in enumerate(tmp_2):
+                    if y.lower() == 'downto':
+                        tmp_2[i] = y.lower()
+                        isvector = True
+
+                if isvector is True:
+                    port_type = VGen.get_type(x)
+                    vec_len = VGen.get_len(x)
+                    if vec_len.isdigit():
+                        print(f'length is fixed : lentgh = {int(vec_len) + 1}')
+                    else:
+                        print(f'has an expression : lentgh_exp = {vec_len}')
+                    isvector = False
+                else:
+                    port_type = tmp_2[3]
+
+                entity.add_port(Port(port_name,port_dir,port_type))
+
+                print(port_name)
+                print(port_dir)
+                print(port_type)
+
 
         return entity
 
@@ -161,28 +205,23 @@ class VGen:
         return entities
 
     @staticmethod
-    def get_port_len(s):
-        num = []
-        nums_found = []
-        num_found = False
+    def get_type(s):
+        tmp = s.split('(')
+        tmp_2 = tmp[0].split()
+        return tmp_2[-1]
 
-        for ch in list(s):
-            if num_found is False:
-                if ch.isdigit():
-                    num.append(ch)
-                    num_found = True
-                    # print(ch)
-            else:
-                if ch.isdigit():
-                    num.append(ch)
-                    # print(ch)
-                else:
-                    nums_found.append(int(''.join(num)))
-                    num_found = False
-                    num = []
-                    # print(nums_found)
+    @staticmethod
+    def get_len(s):
+        s_tmp = s
+        new_string = ''
+        for x in s.split():
+            if x.lower() == 'downto':
+                new_string = s_tmp.replace(x,x.lower())
 
-        if len(nums_found) != 0:
-            return (nums_found[0] + 1) - nums_found[1];
-        else:
-            return 1;
+        tmp = new_string.split('downto')
+        index = tmp[0].find('(')
+        tmp_list = list(tmp[0])
+        tmp_list[index] = ' '
+        final_string = ''.join(tmp_list)
+        return_val = final_string.split()
+        return return_val[-1]

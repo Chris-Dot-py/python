@@ -10,18 +10,102 @@ end entity tb_top;
 architecture tb_top_arch of tb_top is
 
   component clk_Rst is
+  generic(
+    clk_prd : integer
+  );
+  port(
+    clk : in std_logic;
+    input_one : in std_logic;
+    input_two : in std_logic;
+    rst : in std_logic;
+    bit_Vector_signal : out std_logic_vector;
+    custom_signal : out t_tyasdpe;
+    custom_signal_three : out std_logic_vector;
+    custom_signal_four : out unsigned;
+    custom_signal_five : out signed;
+    custom_signal_too : out t_type_no_two;
+    test : out std_logic
+  );
   end component clk_Rst;
 
   component clock is
+  port(
+    clk : in std_logic;
+    rst_n : in std_logic;
+    seconds : out std_logic_vector;
+    minutes : out std_logic_vector;
+    hours : out std_logic_vector;
+    dummy_port : out std_logic_vector
+  );
   end component clock;
 
   component counter is
+  generic(
+    term_cnt : integer;
+    inverted : boolean
+  );
+  port(
+    clk : in std_logic;
+    rst_n : in std_logic;
+    count : out std_logic_vector
+  );
   end component counter;
 
   -- clk_Rst
+  signal bit_Vector_signal : std_logic_vector;
+  signal custom_signal : t_tyasdpe;
+  signal custom_signal_three : std_logic_vector;
+  signal custom_signal_four : unsigned;
+  signal custom_signal_five : signed;
+  signal custom_signal_too : t_type_no_two;
+  signal test : std_logic;
   -- clock
+  signal seconds : std_logic_vector;
+  signal minutes : std_logic_vector;
+  signal hours : std_logic_vector;
+  signal dummy_port : std_logic_vector;
   -- counter
+  signal count : std_logic_vector;
 
 begin
+
+  clk_Rst_0_i : clk_Rst
+  generic map(
+    clk_prd => open
+  );
+  port map(
+    clk => open,
+    input_one => open,
+    input_two => open,
+    rst => open,
+    bit_Vector_signal => bit_Vector_signal,
+    custom_signal => custom_signal,
+    custom_signal_three => custom_signal_three,
+    custom_signal_four => custom_signal_four,
+    custom_signal_five => custom_signal_five,
+    custom_signal_too => custom_signal_too,
+    test => test
+  );
+
+  clock_0_i : clock
+  port map(
+    clk => open,
+    rst_n => open,
+    seconds => seconds,
+    minutes => minutes,
+    hours => hours,
+    dummy_port => dummy_port
+  );
+
+  counter_0_i : counter
+  generic map(
+    term_cnt => open,
+    inverted => open
+  );
+  port map(
+    clk => open,
+    rst_n => open,
+    count => count
+  );
 
 end architecture;

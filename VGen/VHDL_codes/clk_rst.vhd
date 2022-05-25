@@ -20,9 +20,12 @@ Entity clk_Rst is
     -- comments
     bit_Vector_signal : out std_logic_vector(63 downto 0); -- comment her
     custom_signal : out t_tyasdpe; -- comment here
-    -- custom_signal_three : out std_logic_vector(byte_len-1 downto 0);
+    custom_signal_three : out std_logic_vector((byte_len)-1 DowntO 0);
+    custom_signal_four : out unsigned((byte_len)-1 DOWNTO 0);
+    custom_signal_five : out signed((((byte_len)*(ASD))/2)-1 downto 0);
     -- comment here
-    custom_signal_too : out t_type_no_two -- comment here
+    custom_signal_too : out t_type_no_two; -- comment here
+    test : out std_logic
   );
 end entity clk_Rst;
 
