@@ -44,6 +44,9 @@ class VGen:
         port_nls = 0
         num_of_newlines = 0
 
+        code_order = {}
+        code_line = []
+
         with open(vfile, mode = 'r') as read_file:
             while ('end' not in line):
                 line = read_file.readline()
@@ -56,34 +59,39 @@ class VGen:
                             found_entity_name = True
 
                 for ch in list(line):
-
                     # newline counter
                     if ch == '\n':
                         if open_brackets >= 1:
                             num_of_newlines += 1
+                            code_order[str(num_of_newlines-1)] = ''.join(code_line)
+                            code_line = []
 
                     # comment parser
                     if isComment is True:
                         if ch == '\n':
                             isComment = False
                             maybeComment = False
-                            # print(type(comments))
                             comments[str(num_of_newlines-1)] = ''.join(comment)
                             comment = []
                         else:
                             comment.append(ch)
+                            code_line.append(ch)
+
                     elif maybeComment is True:
                         if ch == '-':
                             isComment = True
+                            code_line.append(ch)
                         else:
                             maybeComment = False
                             lines.append(ch_tmp)
                             lines.append(ch)
+                            code_line.append(ch_tmp)
+                            code_line.append(ch)
 
                     elif ch == '-' and open_brackets >= 1:
                         maybeComment = True
                         ch_tmp = ch
-
+                        code_line.append(ch)
 
                     # port parser
                     elif ch == '(':
@@ -92,6 +100,7 @@ class VGen:
                         else:
                             open_brackets += 1
                             lines.append(ch)
+                            code_line.append(ch)
                     elif ch == ')':
                         if open_brackets == 1:
                             open_brackets -= 1
@@ -104,17 +113,22 @@ class VGen:
                             gen_nls = port_nls
                             port_nls = num_of_newlines
 
+                            for i,x in code_order.items():
+                                s = f'line {i} : {x}'
+                                print(s)
+
+                            code_order = {}
                             lines = []
                             comments = {}
                             num_of_newlines = 0
-
-
-                            # print(ports)
                         else:
                             open_brackets -= 1
                             lines.append(ch)
+                            code_line.append(ch)
                     elif open_brackets >= 1:
-                        lines.append(ch)
+                        if ch != '\n':
+                            lines.append(ch)
+                            code_line.append(ch)
 
 
 
@@ -123,74 +137,14 @@ class VGen:
         # generics
         if len(generics) != 0:
             s = f' generics :\n{generics}'
-            print(s)
-
-            # comment = []
-            # comments = {}
-            # generics_tmp = {}
-            # isComment = False
-            # maybeComment = False
-            #
-            # num_of_newlines = 0
-            #
-            # for ch in list(generics):
-            #     # newline counter
-            #     if ch == '\n':
-            #         num_of_newlines += 1
-            #
-            #     # comment parser
-            #     if isComment is True:
-            #         if ch == '\n':
-            #             isComment = False
-            #             maybeComment = False
-            #             comments[str(num_of_newlines-1)] = ''.join(comment)
-            #             comment = []
-            #         else:
-            #             comment.append(ch)
-            #     elif maybeComment is True:
-            #         if ch == '-':
-            #             isComment = True
-            #         else:
-            #             maybeComment = False
-            #     elif ch == '-':
-            #         maybeComment = True
-            print(gen_comments)
-
+            # print(s)
+            # print(gen_comments)
 
         # ports
         if len(ports) != 0:
             s = f' ports :\n{ports}'
-            print(s)
-
-            # comment = []
-            # comments = {}
-            # isComment = False
-            # maybeComment = False
-            #
-            # num_of_newlines = 0
-            #
-            # for ch in list(ports):
-            #     # newline counter
-            #     if ch == '\n':
-            #         num_of_newlines += 1
-            #
-            #     # comment parser
-            #     if isComment is True:
-            #         if ch == '\n':
-            #             isComment = False
-            #             maybeComment = False
-            #             comments[str(num_of_newlines-1)] = ''.join(comment)
-            #             comment = []
-            #         else:
-            #             comment.append(ch)
-            #     elif maybeComment is True:
-            #         if ch == '-':
-            #             isComment = True
-            #         else:
-            #             maybeComment = False
-            #     elif ch == '-':
-            #         maybeComment = True
-            print(port_comments)
+            # print(s)
+            # print(port_comments)
 
         return entity
 
