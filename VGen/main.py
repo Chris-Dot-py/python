@@ -7,13 +7,13 @@ def main():
     else:
         imported_entities = VGen.vimport_files(sys.argv[1])
 
-        tb_clock = Testbench('top')
+        tb = Testbench('top')
 
         for entity in imported_entities.values():
-            tb_clock.add_component(entity)
-            tb_clock.instantiate(entity)
+            tb.add_component(entity)
+            tb.instantiate(entity)
 
-        tb_clock.generate_code()
+        tb.generate_code()
 
 
 if __name__ == '__main__' :
