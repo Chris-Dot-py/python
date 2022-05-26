@@ -13,6 +13,9 @@ Entity clk_Rst is
   port(
     -- comment ---
     -- comment ----
+    is_test : out boolean;
+    is_test2 : in bsafadfoolean;
+    is_test3 : out bsafadfoolean(blabla downto 0);
     clk : in std_logic;
     input_one : in std_logic;
     input_two : in std_logic;

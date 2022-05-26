@@ -14,6 +14,9 @@ architecture tb_top_arch of tb_top is
     clk_prd : integer
   );
   port(
+    is_test : out boolean;
+    is_test2 : in bsafadfoolean;
+    is_test3 : out bsafadfoolean(blabla downto 0);
     clk : in std_logic;
     input_one : in std_logic;
     input_two : in std_logic;
@@ -52,6 +55,8 @@ architecture tb_top_arch of tb_top is
   end component counter;
 
   -- clk_Rst
+  signal is_test : boolean;
+  signal is_test3 : bsafadfoolean(blabla downto 0);
   signal bit_Vector_signal : std_logic_vector(63 downto 0);
   signal custom_signal : t_tyasdpe;
   signal custom_signal_three : std_logic_vector((byte_len)-1 downto 0);
@@ -74,6 +79,9 @@ begin
     clk_prd => open
   );
   port map(
+    is_test => is_test,
+    is_test2 => open,
+    is_test3 => is_test3,
     clk => open,
     input_one => open,
     input_two => open,

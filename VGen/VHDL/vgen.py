@@ -3,11 +3,16 @@ import os
 
 class VGen:
     """
-    line formats:
+    Accpetable formats :
         entity < entity name > is
+        generic(
+            < val name > : < val type >;
+            < val name > : < val type >
+        );
           port(
-            < port name > : < direction > std_logic;
-            < port name > : < direction > std_logic_vector( N - 1 downto 0 );
+            < port name > : < direction > < type >;
+            < port name > : < direction > < custom type >;
+            < port name > : < direction > < vector >( < expression > downto 0 )
           );
         end entity < entity name >;
     """
@@ -46,7 +51,7 @@ class VGen:
 
         code_order = {}
         code_line = []
-
+        print('----------------------------------')
         with open(vfile, mode = 'r') as read_file:
             while ('end' not in line):
                 line = read_file.readline()
@@ -113,6 +118,7 @@ class VGen:
                             gen_nls = port_nls
                             port_nls = num_of_newlines
 
+
                             for i,x in code_order.items():
                                 s = f'line {i} : {x}'
                                 print(s)
@@ -132,19 +138,19 @@ class VGen:
 
 
 
-        s = f'entity : {entity.get_entity_name()}\n'
+        s = f'\nentity : {entity.get_entity_name()}\n'
         print(s)
         # generics
         if len(generics) != 0:
             s = f' generics :\n{generics}'
-            print(s)
-            print(gen_comments)
+            # print(s)
+            # print(gen_comments)
             tmp = generics.split(';')
             for i,x in enumerate(tmp):
                 # sss = f'{i} : {x}'
                 # print(sss)
                 tmp_2 = x.split()
-                print(tmp_2)
+                # print(tmp_2)
                 entity.add_generics(tmp_2[0],tmp_2[2])
 
 
@@ -153,8 +159,8 @@ class VGen:
         vec_len = ''
         if len(ports) != 0:
             s = f' ports :\n{ports}'
-            print(s)
-            print(port_comments)
+            # print(s)
+            # print(port_comments)
 
             tmp = ports.split(';')
             for i,x in enumerate(tmp):
@@ -162,7 +168,6 @@ class VGen:
                 # print(sss)
 
                 tmp_2 = x.split()
-                print(tmp_2)
 
                 port_name = tmp_2[0]
                 port_dir = tmp_2[2]
@@ -177,20 +182,23 @@ class VGen:
                     vec_len = VGen.get_len(x)
                     if vec_len.isdigit():
                         port_len = int(vec_len) + 1
-                        print(f'length is fixed : lentgh = {int(vec_len) + 1}')
+                        # print(f'length is fixed : length = {int(vec_len) + 1}')
+                        s = f'{port_name} : {port_dir} {port_type}({port_len-1} downto 0)'
                     else:
                         port_len = vec_len
-                        print(f'has an expression : lentgh_exp = {vec_len}')
+                        # print(f'has an expression : length_exp = {vec_len}')
+                        s = f'{port_name} : {port_dir} {port_type}({port_len} downto 0)'
                     isvector = False
                     entity.add_port(Port(port_len,port_name,port_dir,port_type))
+
+
                 else:
                     port_type = tmp_2[3]
                     entity.add_port(Port(1,port_name,port_dir,port_type))
 
+                    s = f'{port_name} : {port_dir} {port_type}'
 
-                print(port_name)
-                print(port_dir)
-                print(port_type)
+                print(s)
 
 
         return entity
