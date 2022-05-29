@@ -19,6 +19,9 @@ end entity counter;
 architecture counter_arch of counter is
 
 
+
 begin
+
+
 
 end architecture;

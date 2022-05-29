@@ -6,7 +6,7 @@ from VHDL import *
 import sys,os
 
 ### Global variables #####################################################################
-global collected_paths,present_paths, fpaths_fname, root
+global collected_paths,present_paths, paths, fpaths_fname, root
 # step 2 : make root window
 root = Tk()
 root.title("VGen")
@@ -16,6 +16,7 @@ root.resizable(False,False) # x and y direction of window not resizable
 fpaths_fname = 'VHDL_files.txt'
 collected_paths = []
 present_paths = set()
+paths = {}
 
 ### Button commands ######################################################################
 # browse button command
@@ -43,7 +44,10 @@ def browse():
                         s = '\n' + fname
                         file.write(s)
 
+                # component_name = fname.split('/')
+                # file_list.insert(len(present_paths),component_name[-1])
                 file_list.insert(len(present_paths),fname)
+
             else:
                 print(f'------------------------------')
                 print(f'{fname} has already been added')

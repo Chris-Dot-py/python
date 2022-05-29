@@ -4,6 +4,9 @@ class Port:
         self.__direction = direction
         self.__port_type = port_type
         self.__port_len = port_len
+        self.__isConnected = False
+        self.__number_of_connections = 0
+        self.__connections = {} # {'entity_name' : Port}
 
         if type(self.__port_len) == type('string'): # length defined by an expression
             self.__line = f"    {self.__port_name} : {self.__direction} {self.__port_type}({port_len} downto 0);\n"
@@ -13,32 +16,41 @@ class Port:
             else:
                 self.__line = f"    {self.__port_name} : {self.__direction} {self.__port_type};\n"
 
-        self.__isConnected = False
-        self.__number_of_connections = 0
-        self.__connections = {}
-
-    def connect_port(self, target_port):
+    def connect_port(self, target_entity, target_port):
         if target_port.get_direction() != self.get_direction(): # in - out | out - in
-            self.__connections.add(target_port)
+            self.__connections[target_entity.get_entity_name()] = target_port
             self.__number_of_connections += 1
+        else:
+            print('invalid connection')
 
     def disconnect_port(self, target_port):
-        self.__connections.remove(target_port)
-        self.__number_of_connections -= 1
+        if target_port in self.__connections:
+            self.__connections.remove(target_port)
+            self.__number_of_connections -= 1
+        else:
+            print('port not present')
 
-    def get_port_name(self):
-        return self.__port_name
+    ### Get Methods ######################################################################
+    def get_port_name(self): return self.__port_name
+    def get_direction(self): return self.__direction
+    def get_type(self): return self.__port_type
+    def get_length(self): return self.__port_len
+    def get_line(self): return self.__line
+    def get_connections(self): return self.__connections
 
-    def get_direction(self):
-        return self.__direction
-
-    def get_type(self):
-        return self.__port_type
-
-    def get_length(self):
-        return self.__port_len
-
-    def get_line(self):
-        return self.__line
+    ### functional methods ###############################################################
+    def show_connections(self):
+        if len(self.__connections) != 0:
+            if self.__direction == 'in':
+                if len(self.__connections) > 1:
+                    print('CONFLICT! More than one port is connected into this input.')
+                else:
+                    for entity,port in self.__connections.items():
+                        print(f'entity : \'{entity}\' : port : \'{port.get_port_name()}\'')
+            elif self.__direction == 'out':
+                for entity,port in self.__connections.items():
+                    print(f'entity : \'{entity}\' : port : \'{port.get_port_name()}\'')
+        else:
+            print('no connections')
 
 # print(__name__)
