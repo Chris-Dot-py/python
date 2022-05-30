@@ -6,15 +6,16 @@ root = Tk()
 root.title('test')
 root.geometry("600x500")
 
-# entity_labels_a = {}
 entity_labels_a = []
-entities = ['clk_rst','orologio']
+entities = ['clk_rst','orologio','display', 'uart','scheduler','adc']
 ports = []
 
 ### event functions ######################################################################
 def pop_up(event, num):
+    """ ------------------------------- Golden Code ---------------------------------- """
     for label in entity_labels_a:
         label.pack_forget()
+        port_labels_frame.pack_forget()
 
     if port_labels_frame in entity_labels_a:
         if last_clicked.get() != num:
@@ -29,10 +30,9 @@ def pop_up(event, num):
 
     for index,label in enumerate(entity_labels_a):
         label.pack(side = 'top', anchor = 'nw')
+    """ ------------------------------------------------------------------------------ """
 
 ### GUI variables ########################################################################
-clicked = BooleanVar(root, False)
-click_event = BooleanVar(root, False)
 last_clicked = IntVar(root,0)
 
 ### Main UI Frames #######################################################################
@@ -61,24 +61,13 @@ frame_b.pack(expand = True, side = 'left', fill = 'both', padx = 1, pady = 1)
 
 ### Entity Labels ########################################################################
 
-label_a1 = Label(frame_a, text = 'a label')
-entity_labels_a.append(label_a1)
-label_a1.bind('<Button-1>', lambda x : pop_up('<Button-1>',0))
-
-label_a2 = Label(frame_a, text = 'also label')
-entity_labels_a.append(label_a2)
-label_a2.bind('<Button-1>', lambda x : pop_up('<Button-1>',1))
-
-# for index, entity in enumerate(entities):
-#     entity_labels_a[str(index)] = Label(frame_a, text = entity)
-#     entity_labels_a[str(index)].bind('<Button-1>', lambda x : pop_up('<Button-1>',index))
-#
-# for i in range(len(entity_labels_a)):
-#     entity_labels_a[str(i)]pack(side = 'top', anchor = 'nw')
-
-for label in entity_labels_a:
+""" ---------------------------------- Golden Code ----------------------------------- """
+for index,entity in enumerate(entities):
+    label = Label(frame_a, text = entity)
     label.pack(side = 'top', anchor = 'nw')
-
+    label.bind('<Button-1>', lambda event, i = index: pop_up(event,i))
+    entity_labels_a.append(label)
+""" ---------------------------------------------------------------------------------- """
 
 
 label_b = Label(frame_b, text = 'a label')
