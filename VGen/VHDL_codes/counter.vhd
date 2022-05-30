@@ -5,23 +5,29 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity counter is
-  generic(
-    term_cnt : integer;
-    inverted : boolean
-  );
   port(
-    clk : in std_logic;
-    rst_n : in std_logic;
-    count : out std_logic_vector(3 downto 0)
+    clk : out std_logic;
+    rst_n : out std_logic
   );
 end entity counter;
 
 architecture counter_arch of counter is
-
-
-
 begin
 
+      process
+      begin
+            clk <= '0';
+            wait for 5 ns;
+            clk <= '1';
+            wait for 5 ns;
+      end process;
 
+      process
+      begin
+            rst_n <= '0';
+            wait for 2 ns;
+            rst_n <= '1';
+            wait;
+      end process;
 
 end architecture;

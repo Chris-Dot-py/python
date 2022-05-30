@@ -40,6 +40,7 @@ def main():
         ##################################################################################
         port_a = 'rst_n' # PORT A
 
+        #PORT Bs
         entity_b = 'clock'
         port_b = 'rst_n'
         tmp_ports = imported_entities[entity_a].get_ports()
