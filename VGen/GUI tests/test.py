@@ -1,30 +1,33 @@
 from tkinter import *
 
-global entity_labels_a
+global entity_labels_a, entites, ports
 
 root = Tk()
 root.title('test')
 root.geometry("600x500")
 
+# entity_labels_a = {}
 entity_labels_a = []
+entities = ['clk_rst','orologio']
+ports = []
 
 ### event functions ######################################################################
 def pop_up(event, num):
     for label in entity_labels_a:
         label.pack_forget()
 
-    if pop_label_a in entity_labels_a:
+    if port_labels_frame in entity_labels_a:
         if last_clicked.get() != num:
-            entity_labels_a.remove(pop_label_a)
-            entity_labels_a.insert(num+1, pop_label_a) # change pos
+            entity_labels_a.remove(port_labels_frame)
+            entity_labels_a.insert(num+1, port_labels_frame) # change pos
             last_clicked.set(num)
         else:
-            entity_labels_a.remove(pop_label_a)
+            entity_labels_a.remove(port_labels_frame)
     else:
         last_clicked.set(num)
-        entity_labels_a.insert(num+1, pop_label_a)
+        entity_labels_a.insert(num+1, port_labels_frame)
 
-    for label in entity_labels_a:
+    for index,label in enumerate(entity_labels_a):
         label.pack(side = 'top', anchor = 'nw')
 
 ### GUI variables ########################################################################
@@ -57,6 +60,7 @@ frame_b = Frame(border_b, bg = 'white',width=100,height=100)
 frame_b.pack(expand = True, side = 'left', fill = 'both', padx = 1, pady = 1)
 
 ### Entity Labels ########################################################################
+
 label_a1 = Label(frame_a, text = 'a label')
 entity_labels_a.append(label_a1)
 label_a1.bind('<Button-1>', lambda x : pop_up('<Button-1>',0))
@@ -64,14 +68,31 @@ label_a1.bind('<Button-1>', lambda x : pop_up('<Button-1>',0))
 label_a2 = Label(frame_a, text = 'also label')
 entity_labels_a.append(label_a2)
 label_a2.bind('<Button-1>', lambda x : pop_up('<Button-1>',1))
+
+# for index, entity in enumerate(entities):
+#     entity_labels_a[str(index)] = Label(frame_a, text = entity)
+#     entity_labels_a[str(index)].bind('<Button-1>', lambda x : pop_up('<Button-1>',index))
 #
+# for i in range(len(entity_labels_a)):
+#     entity_labels_a[str(i)]pack(side = 'top', anchor = 'nw')
+
 for label in entity_labels_a:
     label.pack(side = 'top', anchor = 'nw')
+
+
 
 label_b = Label(frame_b, text = 'a label')
 label_b.pack(padx = 5, side = 'top', anchor = 'nw')
 
-pop_label_a = Label(frame_a, text = '      popped text', fg = 'blue')
+port_labels_frame = Frame(frame_a)
+port_a1 = Label(port_labels_frame, text = '      port 1', fg = 'blue')
+ports.append(port_a1)
+port_a2 = Label(port_labels_frame, text = '      port 2', fg = 'blue')
+ports.append(port_a2)
+port_a3 = Label(port_labels_frame, text = '      port 3', fg = 'blue')
+ports.append(port_a3)
+for port in ports:
+    port.pack(side = 'top', anchor = 'nw')
 
 # run window
 root.mainloop()
