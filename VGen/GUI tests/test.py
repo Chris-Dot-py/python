@@ -1,7 +1,5 @@
 from tkinter import *
 
-global entity_labels_a, entites, ports_a, ports_b
-
 root = Tk()
 root.title('test')
 root.geometry("600x500")
@@ -9,17 +7,36 @@ root.geometry("600x500")
 entities = ['clk_rst','orologio','display', 'uart','scheduler','adc']
 ports_a = ['port_1','port_2','port_3'] # OUT PORTS
 ports_b = ['port_1','port_2','port_3'] # IN PORTS
+
+### GUI variables ########################################################################
 entity_labels_a = [] # OUT
 port_labels_a = []
 entity_labels_b = [] # IN
 port_labels_b = []
+"""
+    netlist = {
+        # entity
+        'entity_name' : [
+            Port_1,
+            Port_2,
+            ...
+            Port_N
+        ]
+
+    }
+
+ """
+netlist = {} # {'Entity name' : [Port, .., Port]
+
+is_highlight_on_a = BooleanVar(root, False)
+last_clicked_port = IntVar(root,0)
+last_clicked_entity = IntVar(root,0)
 
 ### event functions ######################################################################
 def pop_up_a(event, num):
-    """ ------------------------------- Golden Code ---------------------------------- """
-    for label in entity_labels_a:
-        label.pack_forget()
-        port_labels_frame_a.pack_forget()
+    for entity_label in entity_labels_a:
+        entity_label.pack_forget()
+    port_labels_frame_a.pack_forget()
 
     if port_labels_frame_a in entity_labels_a:
         if last_clicked_entity.get() != num:
@@ -32,14 +49,12 @@ def pop_up_a(event, num):
         last_clicked_entity.set(num)
         entity_labels_a.insert(num+1, port_labels_frame_a)
 
-    for index,label in enumerate(entity_labels_a):
-        label.pack(side = 'top', anchor = 'nw')
-    """ ------------------------------------------------------------------------------ """
+    for index,entity_label in enumerate(entity_labels_a):
+        entity_label.pack(side = 'top', anchor = 'nw')
 
 def pop_up_b(event, num):
-    """ ------------------------------- Golden Code ---------------------------------- """
-    for label in entity_labels_b:
-        label.pack_forget()
+    for entity_label in entity_labels_b:
+        entity_label.pack_forget()
         port_labels_frame_b.pack_forget()
 
     if port_labels_frame_b in entity_labels_b:
@@ -53,15 +68,31 @@ def pop_up_b(event, num):
         last_clicked_entity.set(num)
         entity_labels_b.insert(num+1, port_labels_frame_b)
 
-    for index,label in enumerate(entity_labels_b):
-        label.pack(side = 'top', anchor = 'nw')
-    """ ------------------------------------------------------------------------------ """
+    for index,entity_label in enumerate(entity_labels_b):
+        entity_label.pack(side = 'top', anchor = 'nw')
 
+def highlight_a(event, num):
+    for port_label in port_labels_a:
+        port_label.configure(bg = 'white')
+        port_label.pack_forget()
 
-### GUI variables ########################################################################
-clicked_port = BooleanVar(root, False)
-last_clicked_port = IntVar(root,0)
-last_clicked_entity = IntVar(root,0)
+    for index,port_label in enumerate(port_labels_a):
+        if index == num:
+            if is_highlight_on_a.get() is False:
+                is_highlight_on_a.set(True)
+                port_label.configure(bg = 'cyan')
+                port_label.pack(side = 'top', anchor = 'nw')
+            else:
+
+                if last_clicked_port.get() != num:
+                    last_clicked_port.set(num)
+                    port_label.configure(bg = 'cyan')
+                    port_label.pack(side = 'top', anchor = 'nw')
+                else:
+                    is_highlight_on_a.set(False)
+                    port_label.pack(side = 'top', anchor = 'nw')
+        else:
+            port_label.pack(side = 'top', anchor = 'nw')
 
 ### Main UI widgets ######################################################################
 frame_a_label = Label(root, text = 'OUT PORTS :')
@@ -92,22 +123,22 @@ done_button = Button(root, text = 'Done', command = quit)
 done_button.grid(row = 5, column = 2, columnspan = 2, padx = (2.5,5), pady = 5, sticky = 'news')
 
 ### Entity Labels ########################################################################
-""" ---------------------------------- Golden Code ----------------------------------- """
 # entities A
 for index,entity in enumerate(entities):
-    label = Label(frame_a, text = entity, bg = 'white')
-    label.pack(side = 'top', anchor = 'nw')
-    label.bind('<Button-1>', lambda event, i = index: pop_up_a(event,i))
-    entity_labels_a.append(label)
+    entity_label = Label(frame_a, text = entity, bg = 'white')
+    entity_label.pack(side = 'top', anchor = 'nw')
+    entity_label.bind('<Button-1>', lambda event, i = index: pop_up_a(event,i))
+    entity_labels_a.append(entity_label)
 
 # pop up port labels OUT
+# port selection are just one at a time
 port_labels_frame_a = Frame(frame_a, bg = 'white')
 for index, port in enumerate(ports_a):
     port_name = '    ' + port
     port_label = Label(port_labels_frame_a, text = port_name, fg = 'blue', bg = 'white')
     port_label.pack(side = 'top', anchor = 'nw')
-    # port_label.bind('<Button-1>', lambda event, i = index: highlight_a(event,i))
-    port_labels_a.append(label)
+    port_label.bind('<Button-1>', lambda event, i = index: highlight_a(event,i))
+    port_labels_a.append(port_label)
 
 # entities B
 for index,entity in enumerate(entities):
@@ -117,12 +148,12 @@ for index,entity in enumerate(entities):
     entity_labels_b.append(label)
 
 # pop up port labels IN
+# NOTE: this section of the GUI has multiple selection
 port_labels_frame_b = Frame(frame_b, bg = 'white')
 for index, port in enumerate(ports_b):
     port_name = '    ' + port
     label = Label(port_labels_frame_b, text = port_name, fg = 'blue', bg = 'white')
     label.pack(side = 'top', anchor = 'nw')
-""" ---------------------------------------------------------------------------------- """
 
 # run window
 root.mainloop()
