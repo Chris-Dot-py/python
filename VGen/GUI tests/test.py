@@ -6,7 +6,7 @@ root.geometry("600x500")
 
 entities = ['clk_rst','orologio','display', 'uart','scheduler','adc']
 ports_a = ['port_1','port_2','port_3'] # OUT PORTS
-ports_b = ['port_1','port_2','port_3'] # IN PORTS
+ports_b = ['inport_1','inport_2','inport_3'] # IN PORTS
 
 ### GUI variables ########################################################################
 entity_labels_a = [] # OUT
@@ -26,9 +26,14 @@ port_labels_b = []
     }
 
  """
-netlist = {} # {'Entity name' : [Port, .., Port]
+netlist = {} # {'Entity name' : [Port, .., Port]}
 
+selected_out_port = StringVar(root)
+selected_in_port = ''
+out_port_connections = {}
+selected_in_ports = []
 is_highlight_on_a = BooleanVar(root, False)
+is_highlight_on_b = []
 last_clicked_port = IntVar(root,0)
 last_clicked_entity = IntVar(root,0)
 
@@ -71,7 +76,7 @@ def pop_up_b(event, num):
     for index,entity_label in enumerate(entity_labels_b):
         entity_label.pack(side = 'top', anchor = 'nw')
 
-def highlight_a(event, num):
+def select_out_port(event, num):
     for port_label in port_labels_a:
         port_label.configure(bg = 'white')
         port_label.pack_forget()
@@ -82,17 +87,75 @@ def highlight_a(event, num):
                 is_highlight_on_a.set(True)
                 port_label.configure(bg = 'cyan')
                 port_label.pack(side = 'top', anchor = 'nw')
+                selected_out_port.set(port_label['text'].replace(' ',''))
             else:
-
+                # cliking on different port
                 if last_clicked_port.get() != num:
                     last_clicked_port.set(num)
                     port_label.configure(bg = 'cyan')
                     port_label.pack(side = 'top', anchor = 'nw')
+                    selected_out_port.set(port_label['text'].replace(' ',''))
+                    # deselect port labels b
+                    for port_label in port_labels_b:
+                        is_highlight_on_b[index].set(False)
+                        port_label.pack_forget()
+
+                    for port_label in port_labels_b:
+                        port_label.configure(bg = 'white')
+                        port_label.pack(side = 'top', anchor = 'nw')
+
+                # clicking on the same port
                 else:
                     is_highlight_on_a.set(False)
                     port_label.pack(side = 'top', anchor = 'nw')
+                    selected_out_port.set('')
+                    # deselect port labels b
+                    for port_label in port_labels_b:
+                        port_label.pack_forget()
+
+                    for port_label in port_labels_b:
+                        port_label.configure(bg = 'white')
+                        port_label.pack(side = 'top', anchor = 'nw')
         else:
             port_label.pack(side = 'top', anchor = 'nw')
+
+    if len(selected_out_port.get()) != 0:
+        print(selected_out_port.get())
+
+def multi_select_in_port(event, num):
+    if is_highlight_on_a.get() is True:
+        for port_label in port_labels_b:
+            port_label.pack_forget()
+
+        for index,port_label in enumerate(port_labels_b):
+            if index == num:
+                if is_highlight_on_b[index].get() is False:
+                    is_highlight_on_b[index].set(True)
+                    port_label.configure(bg = 'cyan')
+                    port_label.pack(side = 'top', anchor = 'nw')
+                    if len(selected_out_port.get()) != 0:
+                        out_port_connections[selected_out_port.get()].append(port_label['text'])
+                else:
+                    is_highlight_on_b[index].set(False)
+                    port_label.configure(bg = 'white')
+                    port_label.pack(side = 'top', anchor = 'nw')
+                    if len(selected_out_port.get()) != 0:
+                        out_port_connections[selected_out_port.get()].remove(port_label['text'])
+            else:
+                port_label.pack(side = 'top', anchor = 'nw')
+
+        print(out_port_connections[selected_out_port.get()])
+    else:
+        for port_label in port_labels_b:
+            port_label.pack_forget()
+
+        for port_label in port_labels_b:
+            port_label.configure(bg = 'white')
+            port_label.pack(side = 'top', anchor = 'nw')
+        Label(root,text = 'no selected out ports', fg = 'red').grid()
+
+
+
 
 ### Main UI widgets ######################################################################
 frame_a_label = Label(root, text = 'OUT PORTS :')
@@ -125,6 +188,7 @@ done_button.grid(row = 5, column = 2, columnspan = 2, padx = (2.5,5), pady = 5, 
 ### Entity Labels ########################################################################
 # entities A
 for index,entity in enumerate(entities):
+    netlist[entity] = {}
     entity_label = Label(frame_a, text = entity, bg = 'white')
     entity_label.pack(side = 'top', anchor = 'nw')
     entity_label.bind('<Button-1>', lambda event, i = index: pop_up_a(event,i))
@@ -134,10 +198,11 @@ for index,entity in enumerate(entities):
 # port selection are just one at a time
 port_labels_frame_a = Frame(frame_a, bg = 'white')
 for index, port in enumerate(ports_a):
+    out_port_connections[port] = []
     port_name = '    ' + port
     port_label = Label(port_labels_frame_a, text = port_name, fg = 'blue', bg = 'white')
     port_label.pack(side = 'top', anchor = 'nw')
-    port_label.bind('<Button-1>', lambda event, i = index: highlight_a(event,i))
+    port_label.bind('<Button-1>', lambda event, i = index: select_out_port(event,i))
     port_labels_a.append(port_label)
 
 # entities B
@@ -151,9 +216,14 @@ for index,entity in enumerate(entities):
 # NOTE: this section of the GUI has multiple selection
 port_labels_frame_b = Frame(frame_b, bg = 'white')
 for index, port in enumerate(ports_b):
+    selected_in_ports = []
     port_name = '    ' + port
-    label = Label(port_labels_frame_b, text = port_name, fg = 'blue', bg = 'white')
-    label.pack(side = 'top', anchor = 'nw')
+    port_label = Label(port_labels_frame_b, text = port_name, fg = 'blue', bg = 'white')
+    port_label.pack(side = 'top', anchor = 'nw')
+    port_label.bind('<Button-1>', lambda event, i = index: multi_select_in_port(event,i))
+    port_labels_b.append(port_label)
+    isHiglightOn = BooleanVar(root,False)
+    is_highlight_on_b.append(isHiglightOn)
 
 # run window
 root.mainloop()
