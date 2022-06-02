@@ -204,27 +204,27 @@ class VGen:
         return entity
 
     # ### Gui testing ######################################################################
-    # @staticmethod
-    # def vimport_files(list_of_files):
-    #     entities = {}
-    #     for file in list_of_files:
-    #         imported_entity = VGen.vimport(file)
-    #         entities[imported_entity.get_entity_name()] = imported_entity
-    #
-    #     return entities
-
-    ### Cmd prompt testing ###############################################################
     @staticmethod
-    def vimport_files(directory_path):
-        files = os.listdir(directory_path)
-        path = directory_path + '/'
+    def vimport_files(list_of_files):
         entities = {}
-        for file in files:
-            file_path = path + ''.join(file)
-            imported_entity = VGen.vimport(file_path)
+        for file in list_of_files:
+            imported_entity = VGen.vimport(file)
             entities[imported_entity.get_entity_name()] = imported_entity
 
         return entities
+
+    ### Cmd prompt testing ###############################################################
+    # @staticmethod
+    # def vimport_files(directory_path):
+    #     files = os.listdir(directory_path)
+    #     path = directory_path + '/'
+    #     entities = {}
+    #     for file in files:
+    #         file_path = path + ''.join(file)
+    #         imported_entity = VGen.vimport(file_path)
+    #         entities[imported_entity.get_entity_name()] = imported_entity
+    #
+    #     return entities
 
 
     @staticmethod
