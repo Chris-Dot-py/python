@@ -38,7 +38,7 @@ class Entity:
                     'end'   :           'end architecture;\n'}
     directory    = r"VHDL_codes"
 
-    def __init__(self, entity_name, circuit_type = None):
+    def __init__(self, entity_name = '', circuit_type = None):
         self.__entity_name = entity_name
         self.__vhdl_code = []
         self.__generics = {} # {'val_name' : (val_name,val_type)}
@@ -47,6 +47,10 @@ class Entity:
         self.__number_of_outputs = 0
         self.__components = {} # {"entity_name" : (Entity, instances)}
         self.__declared_signals = set() # using sets to avoid duplicates
+
+    ### Set Methods ######################################################################
+    def set_entity_name(self,name):
+        self.__entity_name = name
 
     ### Get methods ######################################################################
     def get_entity_name(self): return self.__entity_name

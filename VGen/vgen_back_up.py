@@ -14,15 +14,13 @@ root.geometry("600x500")
 root.resizable(False,False) # x and y direction of window not resizable
 # file paths placeholder
 fpaths_fname = 'VHDL_files.txt'
-added_components = {}
+added_components = []
 collected_paths = []
 present_paths = set()
 paths = {}
 
-parent_entity = Entity()
 entity_labels_a = [] # OUT
 port_labels_a = {}
-port_labels_a_frames = {}
 entity_labels_b = [] # IN
 port_labels_b = []
 entities = ['clk_rst','orologio','display', 'uart','scheduler','adc']
@@ -37,32 +35,25 @@ out_port_connections = {}
 selected_in_ports = []
 is_highlight_on_a = BooleanVar(root, False)
 is_highlight_on_b = []
-
-isExpanded = BooleanVar(root,False)
 last_clicked_port = IntVar(root,0)
-last_clicked_entity = StringVar()
-last_clicked_entity_pos = IntVar(root,0)
+last_clicked_entity = IntVar(root,0)
 
 ### Port Mapping related Funcitons #######################################################
-def pop_up_a(event, num, entity_name):
+def pop_up_a(event, num):
     for entity_label in entity_labels_a:
         entity_label.pack_forget()
+    port_labels_frame_a.pack_forget()
 
-    if isExpanded.get() is True:
-        if last_clicked_entity_pos.get() == num:
-            entity_labels_a.remove(port_labels_a_frames[entity_name])
-            isExpanded.set(False)
+    if port_labels_frame_a in entity_labels_a:
+        if last_clicked_entity.get() != num:
+            entity_labels_a.remove(port_labels_frame_a)
+            entity_labels_a.insert(num+1, port_labels_frame_a) # change pos
+            last_clicked_entity.set(num)
         else:
-            entity_labels_a.remove(port_labels_a_frames[last_clicked_entity.get()]) # change pos
-            entity_labels_a.insert(num+1, port_labels_a_frames[entity_name]) # change pos
-            last_clicked_entity_pos.set(num)
-            last_clicked_entity.set(entity_name)
-
+            entity_labels_a.remove(port_labels_frame_a)
     else:
-        entity_labels_a.insert(num+1, port_labels_a_frames[entity_name]) # change pos
-        last_clicked_entity_pos.set(num)
-        last_clicked_entity.set(entity_name)
-        isExpanded.set(True)
+        last_clicked_entity.set(num)
+        entity_labels_a.insert(num+1, port_labels_frame_a)
 
     for index,entity_label in enumerate(entity_labels_a):
         entity_label.pack(side = 'top', anchor = 'nw')
@@ -192,17 +183,13 @@ def browse():
                 tmp_ports = tmp_entity.get_ports()
                 port_labels_a[tmp_entity.get_entity_name()] = []
 
-                port_labels_a_frames[tmp_entity.get_entity_name()] = Frame(frame_a, bg = 'white')
-
-                for index,(port_name,port) in enumerate(tmp_ports.items()):
+                for index,(port_name,port) in enumerate(tmp_ports):
                     s = '    ' + port_name
-                    port_label = Label(port_labels_a_frames[tmp_entity.get_entity_name()], text = s, fg = 'blue', bg = 'white')
+                    port_label = Label(port_labels_frame_a, text = s, fg = 'blue', bg = 'white')
                     port_label.pack(side = 'top', anchor = 'nw')
                     port_label.pack_propagate(False)
                     port_label.bind('<Button-1>', lambda event, i = index: select_out_port(event,i))
                     port_labels_a[tmp_entity.get_entity_name()].append(port_label)
-
-
 
                 if not check_file(fpaths_fname):
                     with open(fpaths_fname, mode = 'w') as file:
@@ -223,17 +210,13 @@ def browse():
 
         # for component in added_components:
         #     component_label = Label()
+
         print(f'-------------')
         print('added files :')
         for files in collected_paths:
             s = '  ' + files
             print(s)
 
-        # view added ports
-        for x,y in port_labels_a.items():
-            print(f'{x} :\n')
-            for z in y:
-                print(z['text'])
     else:
         print('No selected files')
 
@@ -327,11 +310,11 @@ def instantiate():
     print(file_list.get(ANCHOR))
 
     if len(file_list.get(ANCHOR)) != 0:
-        parent_entity.instantiate(added_components[file_list.get(ANCHOR)])
+        parent_entity.instantiate(instances[file_list.get(ANCHOR)])
         index = len(entity_labels_a)
         entity_label_a = Label(frame_a, text = file_list.get(ANCHOR), bg = 'white')
         entity_label_a.pack(side = 'top', anchor = 'nw')
-        entity_label_a.bind('<Button-1>', lambda event, i = index, s = file_list.get(ANCHOR): pop_up_a(event,i,s))
+        entity_label_a.bind('<Button-1>', lambda event, i = index: pop_up_a(event,i))
         entity_label_a.pack_propagate(False)
         entity_labels_a.append(entity_label_a)
 
