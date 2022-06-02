@@ -48,6 +48,16 @@ class Entity:
         self.__components = {} # {"entity_name" : (Entity, instances)}
         self.__declared_signals = set() # using sets to avoid duplicates
 
+    def reset(self):
+        self.__entity_name = ''
+        self.__vhdl_code = []
+        self.__generics = {} # {'val_name' : (val_name,val_type)}
+        self.__ports = {} # {'port_name' : Port}
+        self.__number_of_inputs = 0
+        self.__number_of_outputs = 0
+        self.__components = {} # {"entity_name" : (Entity, instances)}
+        self.__declared_signals = set() # using sets to avoid duplicates
+
     ### Set Methods ######################################################################
     def set_entity_name(self,name):
         self.__entity_name = name

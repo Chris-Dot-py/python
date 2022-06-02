@@ -17,7 +17,6 @@ fpaths_fname = 'VHDL_files.txt'
 added_components = {}
 collected_paths = []
 present_paths = set()
-paths = {}
 
 parent_entity = Entity()
 entity_labels_a = [] # OUT
@@ -25,10 +24,6 @@ port_labels_a = {}
 port_labels_a_frames = {}
 entity_labels_b = [] # IN
 port_labels_b = []
-entities = ['clk_rst','orologio','display', 'uart','scheduler','adc']
-ports_a = ['port_1','port_2','port_3'] # OUT PORTS
-ports_b = ['inport_1','inport_2','inport_3'] # IN PORTS
-
 instances = {} # {'Entity name' : [Port, .., Port]}
 
 selected_out_port = StringVar(root)
@@ -195,12 +190,13 @@ def browse():
                 port_labels_a_frames[tmp_entity.get_entity_name()] = Frame(frame_a, bg = 'white')
 
                 for index,(port_name,port) in enumerate(tmp_ports.items()):
-                    s = '    ' + port_name
-                    port_label = Label(port_labels_a_frames[tmp_entity.get_entity_name()], text = s, fg = 'blue', bg = 'white')
-                    port_label.pack(side = 'top', anchor = 'nw')
-                    port_label.pack_propagate(False)
-                    port_label.bind('<Button-1>', lambda event, i = index: select_out_port(event,i))
-                    port_labels_a[tmp_entity.get_entity_name()].append(port_label)
+                    if port.get_direction() == 'out':
+                        s = '    ' + port_name
+                        port_label = Label(port_labels_a_frames[tmp_entity.get_entity_name()], text = s, fg = 'blue', bg = 'white')
+                        port_label.pack(side = 'top', anchor = 'nw')
+                        port_label.pack_propagate(False)
+                        port_label.bind('<Button-1>', lambda event, i = index: select_out_port(event,i))
+                        port_labels_a[tmp_entity.get_entity_name()].append(port_label)
 
 
 
@@ -287,6 +283,20 @@ def generate():
 
         if len(collected_paths) != 0:
             parent_entity.generate_code()
+            parent_entity.reset()
+            added_components.clear()
+            collected_paths.clear()
+            present_paths.clear()
+            file_list.delete(0,END)
+
+            for x in entity_labels_a:
+                x.pack_forget()
+
+            entity_labels_a.clear()
+            port_labels_a.clear()
+            port_labels_a_frames.clear()
+            instances.clear()
+
         else:
             print(f'-----------------')
             print('No files selected')
@@ -295,9 +305,7 @@ def generate():
         for fname in collected_paths:
             print(fname)
 
-        collected_paths.clear()
-        present_paths.clear()
-        file_list.delete(0,END)
+
 
         if check_file(fpaths_fname):
             os.remove(fpaths_fname)
