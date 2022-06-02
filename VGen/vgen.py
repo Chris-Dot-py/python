@@ -10,8 +10,8 @@ global collected_paths,present_paths, paths, fpaths_fname, root
 # step 2 : make root window
 root = Tk()
 root.title("VGen")
-root.geometry("800x500")
-# root.resizable(False,False) # x and y direction of window not resizable
+root.geometry("600x500")
+root.resizable(False,False) # x and y direction of window not resizable
 # file paths placeholder
 fpaths_fname = 'VHDL_files.txt'
 collected_paths = []
@@ -229,56 +229,61 @@ def check_file(path):
     return file.is_file()
 
 def organize():
-    root.columnconfigure(0, weight=1)
+    # root.columnconfigure(0, weight=0)
     root.columnconfigure(1, weight=1)
     root.columnconfigure(2, weight=1)
-    root.columnconfigure(3, weight=1)
-    root.columnconfigure(4, weight=1)
-    root.columnconfigure(5, weight=1)
-    root.columnconfigure(6, weight=1)
-    # root.rowconfigure(0, weight=1)
-    # root.rowconfigure(1, weight=1)
+    # root.rowconfigure(0, weight=0)
+    # root.rowconfigure(1, weight=0)
     root.rowconfigure(2, weight=1)
-    root.rowconfigure(3, weight=1)
-    root.rowconfigure(4, weight=1)
-    # root.rowconfigure(5, weight=1)
-    # root.rowconfigure(6, weight=1)
+    # root.rowconfigure(3, weight=0)
+    # root.rowconfigure(4, weight=0)
 
-    name_input_frame.grid(column = 0, row = 0, columnspan = 1, sticky = 'W')
-    parent_entity_name.pack(side = LEFT)
-    parent_entity_name_entry.pack(side = LEFT)
-
-    label_file_explorer.grid(row = 1, column = 0, sticky = 'W')
-
-    file_list.grid(         row = 2, column = 0, rowspan = 3, columnspan = 2, padx = 5, pady = 5, sticky = 'nesw')
-    browse_button.grid(     row = 5, column = 0, padx = 5, pady = 5, sticky = 'ew')
-    instantiate_button.grid(row = 5, column = 1, padx = 5, pady = 5, sticky = 'ew')
-
-    frame_a_label.grid( row = 1, column = 2, padx = 5, pady = (5,0), sticky = 'w')
-    border_a.grid(      row = 2, column = 2, rowspan = 4, columnspan = 2, sticky = 'news', padx = (5,2.5), pady = 5)
-    frame_a.pack(expand = True, side = 'left', fill = 'both', padx = 1, pady = 1)
-
-    frame_b_label.grid( row = 1, column = 4, padx = 5, pady = (5,0), sticky = 'w')
-    border_b.grid(      row = 2, column = 4, rowspan = 4, columnspan = 2, sticky = 'news', padx = (2.5,5), pady = 5)
-    frame_b.pack(expand = True, side = 'left', fill = 'both', padx = 1, pady = 1)
-
-    generate_button.grid(row = 6, column = 2, columnspan = 2, padx = (5,2.5), pady = 5, sticky = 'ew')
-    done_button.grid(    row = 6, column = 4, columnspan = 2, padx = (2.5,5), pady = 5, sticky = 'ew')
+    # Entity name input
+    name_input_frame.grid( row = 0, column = 0, sticky = 'W')
+    parent_entity_name.pack( side = LEFT) # Label
+    parent_entity_name_entry.pack( side = LEFT)
+    # Selected Components viewer
+    label_file_explorer.grid( row = 1, column = 0, sticky = 'W') # Label
+    file_list.grid( row = 2, column = 0, padx = 5, pady = 5, sticky = 'nesw')
+    # Browse and Instantiate Buttons
+    browse_inst_button_frame.grid( row = 3, column = 0, padx = 5, pady = 5)
+    browse_button.pack( side = 'left', anchor = 'nw', padx = (5,2.5))
+    instantiate_button.pack( side = 'left', anchor = 'nw', padx = (2.5,5))
+    # Out Ports Frame
+    frame_a_label.grid( row = 1, column = 1, padx = 5, pady = (5,0), sticky = 'w') # Label
+    border_a.grid( row = 2, column = 1, rowspan = 2, sticky = 'nws', padx = (5,2.5), pady = 5)
+    border_a.grid_propagate(False)
+    frame_a.pack( expand = True, side = 'left', fill = 'both', padx = 1, pady = 1)
+    frame_a.pack_propagate(False)
+    # In Ports Frame
+    frame_b_label.grid( row = 1, column = 2, padx = 5, pady = (5,0), sticky = 'w') # Label
+    border_b.grid( row = 2, column = 2, rowspan = 2, sticky = 'nws', padx = (2.5,5), pady = 5)
+    border_b.grid_propagate(False)
+    frame_b.pack( expand = True, side = 'left', fill = 'both', padx = 1, pady = 1)
+    # Generate And Done Buttons
+    gen_done_button_frame.grid( row = 4, column = 2, padx = 5, pady = 5, sticky = 'e')
+    generate_button.pack( side = 'left', anchor = 'nw', padx = (5,2.5))
+    done_button.pack( side = 'left', anchor = 'nw', padx = (2.5,5))
 
 
 ### widgets ######################################################################
 frame_a_label = Label(root, text = 'Out Ports :')
 frame_b_label = Label(root, text = 'In Ports : ')
-border_a = Frame(root, bg = 'black',width=500,height=300)
-frame_a = Frame(border_a, bg = 'white',width=100,height=100)
-border_b = Frame(root, bg = 'black',width=500,height=300)
-frame_b = Frame(border_b, bg = 'white',width=100,height=100)
+border_a = Frame(root, bg = 'black', width = 20)
+frame_a = Frame(border_a, bg = 'white', width = 200)
+border_b = Frame(root, bg = 'black', width = 20)
+frame_b = Frame(border_b, bg = 'white', width = 200)
 
 label_file_explorer = Label(root, text = "Added components : ")
-browse_button = Button(root, text = 'Browse', width = 20,command = browse)
-instantiate_button = Button(root, text = 'Instantiate', width = 20)
-generate_button = Button(root, text = 'Generate', width = 20,command = generate)
-done_button = Button(root, text = 'Done', width = 20, command = done)
+
+browse_inst_button_frame = Frame(root)
+browse_button = Button(browse_inst_button_frame, text = 'Browse', width = 10,command = browse)
+instantiate_button = Button(browse_inst_button_frame, text = 'Instantiate', width = 10)
+
+gen_done_button_frame = Frame(root)
+generate_button = Button(gen_done_button_frame, text = 'Generate', width = 10,command = generate)
+done_button = Button(gen_done_button_frame, text = 'Done', width = 10, command = done)
+
 file_list = Listbox(root)
 name_input_frame = Frame(root)
 parent_entity_name = Label(name_input_frame, text = 'Entity : ')
