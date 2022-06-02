@@ -14,9 +14,18 @@ root.geometry("600x500")
 root.resizable(False,False) # x and y direction of window not resizable
 # file paths placeholder
 fpaths_fname = 'VHDL_files.txt'
+added_components = []
 collected_paths = []
 present_paths = set()
 paths = {}
+
+entity_labels_a = [] # OUT
+port_labels_a = []
+entity_labels_b = [] # IN
+port_labels_b = []
+entities = ['clk_rst','orologio','display', 'uart','scheduler','adc']
+ports_a = ['port_1','port_2','port_3'] # OUT PORTS
+ports_b = ['inport_1','inport_2','inport_3'] # IN PORTS
 
 netlist = {} # {'Entity name' : [Port, .., Port]}
 
@@ -165,6 +174,7 @@ def browse():
                 # all unique files are added
                 present_paths.add(fname)
                 collected_paths.append(fname)
+                added_components.append(VGen.vimport(fname))
                 if not check_file(fpaths_fname):
                     with open(fpaths_fname, mode = 'w') as file:
                         file.write(fname)
@@ -173,9 +183,9 @@ def browse():
                         s = '\n' + fname
                         file.write(s)
 
-                # component_name = fname.split('/')
-                # file_list.insert(len(present_paths),component_name[-1])
-                file_list.insert(len(present_paths),fname)
+                component_name = fname.split('/')
+                file_list.insert(len(present_paths),component_name[-1].replace('.vhd',''))
+                # file_list.insert(len(present_paths),fname)
 
             else:
                 print(f'------------------------------')
@@ -186,36 +196,43 @@ def browse():
         for files in collected_paths:
             s = '  ' + files
             print(s)
+
     else:
         print('No selected files')
 
 # generate button command
 def generate():
-    imported_entities = VGen.vimport_files(collected_paths)
-    # declare top level
-    parent_entity = Entity(parent_entity_name_entry.get())
+    if len(parent_entity_name_entry.get()) != 0:
+        imported_entities = VGen.vimport_files(collected_paths)
+        # declare top level
+        parent_entity = Entity(parent_entity_name_entry.get())
 
-    # add and instantiate selected components
-    for entity in imported_entities.values():
-        parent_entity.add_component(entity)
-        parent_entity.instantiate(entity)
+        # add and instantiate selected components
+        for entity in imported_entities.values():
+            parent_entity.add_component(entity)
+            parent_entity.instantiate(entity)
 
-    if len(collected_paths):
-        parent_entity.generate_code()
+        if len(collected_paths) != 0:
+            parent_entity.generate_code()
+        else:
+            print(f'-----------------')
+            print('No files selected')
+
+        print(f'------------------------------')
+        for fname in collected_paths:
+            print(fname)
+
+        collected_paths.clear()
+        present_paths.clear()
+        file_list.delete(0,END)
+
+        if check_file(fpaths_fname):
+            os.remove(fpaths_fname)
+
+        message('','black')
     else:
-        print(f'-----------------')
-        print('No files selected')
-
-    print(f'------------------------------')
-    for fname in collected_paths:
-        print(fname)
-
-    collected_paths.clear()
-    present_paths.clear()
-    file_list.delete(0,END)
-
-    if check_file(fpaths_fname):
-        os.remove(fpaths_fname)
+        s = 'Please Enter Entity Name...'
+        message(s,'red')
 
 # done button command
 def done():
@@ -227,6 +244,25 @@ def done():
 def check_file(path):
     file = Path(path)
     return file.is_file()
+
+def message(s,c):
+    GUI_message.pack_forget()
+    GUI_message.configure(text = s, fg = c)
+    GUI_message.pack(side = 'top', anchor = 'w')
+
+def instantiate():
+    print(file_list.get(ANCHOR))
+    # for index,component in enumerate(added_components):
+    entity_label_a = Label(frame_a, text = file_list.get(ANCHOR), bg = 'white')
+    entity_label_a.pack(side = 'top', anchor = 'nw')
+    # entity_label_a.bind('<Button-1>', lambda event, i = index: pop_up_a(event,i))
+    entity_label_a.pack_propagate(False)
+    entity_labels_a.append(entity_label_a)
+
+    entity_label_b = Label(frame_b, text = file_list.get(ANCHOR), bg = 'white')
+    entity_label_b.pack(side = 'top', anchor = 'nw')
+    entity_label_b.pack_propagate(False)
+    entity_labels_b.append(entity_label_b)
 
 def organize():
     # root.columnconfigure(0, weight=0)
@@ -260,25 +296,29 @@ def organize():
     border_b.grid( row = 2, column = 2, rowspan = 2, sticky = 'nws', padx = (2.5,5), pady = 5)
     border_b.grid_propagate(False)
     frame_b.pack( expand = True, side = 'left', fill = 'both', padx = 1, pady = 1)
+    frame_b.pack_propagate(False)
     # Generate And Done Buttons
     gen_done_button_frame.grid( row = 4, column = 2, padx = 5, pady = 5, sticky = 'e')
     generate_button.pack( side = 'left', anchor = 'nw', padx = (5,2.5))
     done_button.pack( side = 'left', anchor = 'nw', padx = (2.5,5))
+    # GUI messages
+    GUI_message_wrapper.grid(row=4, column = 0, columnspan = 2, padx = 5, sticky = 'we')
+    GUI_message.pack( side = 'left', anchor = 'nw')
 
 
 ### widgets ######################################################################
 frame_a_label = Label(root, text = 'Out Ports :')
 frame_b_label = Label(root, text = 'In Ports : ')
-border_a = Frame(root, bg = 'black', width = 20)
+border_a = Frame(root, bg = 'black', width = 200)
 frame_a = Frame(border_a, bg = 'white', width = 200)
-border_b = Frame(root, bg = 'black', width = 20)
+border_b = Frame(root, bg = 'black', width = 200)
 frame_b = Frame(border_b, bg = 'white', width = 200)
 
 label_file_explorer = Label(root, text = "Added components : ")
 
 browse_inst_button_frame = Frame(root)
 browse_button = Button(browse_inst_button_frame, text = 'Browse', width = 10,command = browse)
-instantiate_button = Button(browse_inst_button_frame, text = 'Instantiate', width = 10)
+instantiate_button = Button(browse_inst_button_frame, text = 'Instantiate', width = 10, command = instantiate)
 
 gen_done_button_frame = Frame(root)
 generate_button = Button(gen_done_button_frame, text = 'Generate', width = 10,command = generate)
@@ -288,6 +328,55 @@ file_list = Listbox(root)
 name_input_frame = Frame(root)
 parent_entity_name = Label(name_input_frame, text = 'Entity : ')
 parent_entity_name_entry = Entry(name_input_frame)
+
+GUI_message_wrapper = Frame(root)
+GUI_message = Label(GUI_message_wrapper)
+
+### Instanced Labels manager #############################################################
+# entities A
+# for index,entity in enumerate(added_components):
+#     netlist[entity] = {}
+#     entity_label = Label(frame_a, text = entity, bg = 'white')
+#     entity_label.pack(side = 'top', anchor = 'nw')
+#     entity_label.pack_propagate(False)
+#     entity_label.bind('<Button-1>', lambda event, i = index: pop_up_a(event,i))
+#     entity_labels_a.append(entity_label)
+
+# # pop up port labels OUT
+# # port selection are just one at a time
+# port_labels_frame_a = Frame(frame_a, bg = 'white')
+# for index, port in enumerate(ports_a):
+#     out_port_connections[port] = []
+#     port_name = '    ' + port
+#     port_label = Label(port_labels_frame_a, text = port_name, fg = 'blue', bg = 'white')
+#     port_label.pack(side = 'top', anchor = 'nw')
+#     port_label.pack_propagate(False)
+#     port_label.bind('<Button-1>', lambda event, i = index: select_out_port(event,i))
+#     port_labels_a.append(port_label)
+#
+# # entities B
+# for index,entity in enumerate(entities):
+#     label = Label(frame_b, text = entity, bg = 'white')
+#     label.pack(side = 'top', anchor = 'nw')
+#     label.pack_propagate(False)
+#     label.bind('<Button-1>', lambda event, i = index: pop_up_b(event,i))
+#     entity_labels_b.append(label)
+#
+# # pop up port labels IN
+# # NOTE: this section of the GUI has multiple selection
+# port_labels_frame_b = Frame(frame_b, bg = 'white')
+# for index, port in enumerate(ports_b):
+#     selected_in_ports = []
+#     port_name = '    ' + port
+#     port_label = Label(port_labels_frame_b, text = port_name, fg = 'blue', bg = 'white')
+#     port_label.pack(side = 'top', anchor = 'nw')
+#     port_label.pack_propagate(False)
+#     port_label.bind('<Button-1>', lambda event, i = index: multi_select_in_port(event,i))
+#     port_labels_b.append(port_label)
+#     isHiglightOn = BooleanVar(root,False)
+#     is_highlight_on_b.append(isHiglightOn)
+
+
 # organize widgets
 organize()
 # execute window
