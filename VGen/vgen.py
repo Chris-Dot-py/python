@@ -4,6 +4,7 @@ from tkinter import filedialog
 from pathlib import Path
 from VHDL import *
 import sys,os
+from os import path
 
 ### Variables ############################################################################
 global collected_paths,present_paths, paths, fpaths_fname, root
@@ -13,6 +14,7 @@ root.title("VGen")
 root.geometry("600x500")
 root.resizable(False,False) # x and y direction of window not resizable
 # file paths placeholder
+dir_path =  sys.argv[1] if path.isdir(sys.argv[1]) else '/'
 fpaths_fname = 'VHDL_files.txt'
 added_components = {}
 collected_paths = []
@@ -161,10 +163,13 @@ def multi_select_in_port(event, num):
 
 
 ### Button commands ######################################################################
+def set_directory_path(s):
+    dir_path = s
+
 # browse button command
 def browse():
     filename = filedialog.askopenfilename(
-        initialdir =   "/",
+        initialdir =   dir_path,
         title      =   "Select a File",
         filetypes  = (("VHDL files","*.vhd*"),
                       ("all files" ,"*.*")),

@@ -256,17 +256,22 @@ class Entity:
         else:
             print('component hasn\'t been declared')
 
-    def generate_netlist(self):
-        pass
-
     def generate_code(self, name = None):
         fname = self.__entity_name + '.vhd' if name == None else name + '.vhd'
         complete_path = os.path.join(Entity.directory, fname)
         self.__build_code(name)
 
         if not self.__check_file(complete_path):
-            with open(complete_path, mode = 'w') as file:
-                file.write(self.get_code())
+            try:
+                with open(complete_path, mode = 'w') as file:
+                    file.write(self.get_code())
+            except:
+                msg = '\n'\
+                      '###############################################\n'\
+                      'Invalid Path\n'\
+                      '    current working directory != VGen directory\n'\
+                      '###############################################'
+                print(msg)
         else:
             print(f'Failed to generate code : file \'{fname}\' already exists...')
 
