@@ -55,6 +55,7 @@ class VGen:
         with open(vfile, mode = 'r') as read_file:
             while ('end' not in line):
                 line = read_file.readline()
+                # print(line)
 
                 if found_entity_name is False:
                     line_list = line.split()
@@ -62,79 +63,81 @@ class VGen:
                         if item.lower() == 'entity':
                             entity = Entity(line_list[index + 1])
                             found_entity_name = True
-
-                for ch in list(line):
-                    # newline counter
-                    if ch == '\n':
-                        if open_brackets >= 1:
-                            num_of_newlines += 1
-                            code_order[str(num_of_newlines-1)] = ''.join(code_line)
-                            code_line = []
-
-                    # comment parser
-                    if isComment is True:
+                else:
+                    for ch in list(line):
+                        # newline counter
                         if ch == '\n':
-                            isComment = False
-                            maybeComment = False
-                            comments[str(num_of_newlines-1)] = ''.join(comment)
-                            comment = []
-                        else:
-                            comment.append(ch)
+                            if open_brackets >= 1:
+                                num_of_newlines += 1
+                                code_order[str(num_of_newlines-1)] = ''.join(code_line)
+                                code_line = []
+
+                        # comment parser
+                        if isComment is True:
+                            if ch == '\n':
+                                isComment = False
+                                maybeComment = False
+                                comments[str(num_of_newlines-1)] = ''.join(comment)
+                                comment = []
+                            else:
+                                comment.append(ch)
+                                code_line.append(ch)
+
+                        elif maybeComment is True:
+                            if ch == '-':
+                                isComment = True
+                                code_line.append(ch)
+                            else:
+                                maybeComment = False
+                                lines.append(ch_tmp)
+                                lines.append(ch)
+                                code_line.append(ch_tmp)
+                                code_line.append(ch)
+
+                        elif ch == '-' and open_brackets >= 1:
+                            maybeComment = True
+                            ch_tmp = ch
                             code_line.append(ch)
 
-                    elif maybeComment is True:
-                        if ch == '-':
-                            isComment = True
-                            code_line.append(ch)
-                        else:
-                            maybeComment = False
-                            lines.append(ch_tmp)
-                            lines.append(ch)
-                            code_line.append(ch_tmp)
-                            code_line.append(ch)
+                        # port parser
+                        elif ch == '(':
+                            if open_brackets == 0:
+                                open_brackets += 1
+                            else:
+                                open_brackets += 1
+                                lines.append(ch)
+                                code_line.append(ch)
+                        elif ch == ')':
+                            if open_brackets == 1:
+                                open_brackets -= 1
+                                generics = ports
+                                ports = ''.join(lines)
+                                print(generics)
+                                print(ports)
 
-                    elif ch == '-' and open_brackets >= 1:
-                        maybeComment = True
-                        ch_tmp = ch
-                        code_line.append(ch)
+                                gen_comments = port_comments
+                                port_comments = comments
 
-                    # port parser
-                    elif ch == '(':
-                        if open_brackets == 0:
-                            open_brackets += 1
-                        else:
-                            open_brackets += 1
-                            lines.append(ch)
-                            code_line.append(ch)
-                    elif ch == ')':
-                        if open_brackets == 1:
-                            open_brackets -= 1
-                            generics = ports
-                            ports = ''.join(lines)
-
-                            gen_comments = port_comments
-                            port_comments = comments
-
-                            gen_nls = port_nls
-                            port_nls = num_of_newlines
+                                gen_nls = port_nls
+                                port_nls = num_of_newlines
 
 
-                            for i,x in code_order.items():
-                                s = f'line {i} : {x}'
-                                print(s)
+                                for i,x in code_order.items():
+                                    s = f'line {i} : {x}'
+                                    print(s)
 
-                            code_order = {}
-                            lines = []
-                            comments = {}
-                            num_of_newlines = 0
-                        else:
-                            open_brackets -= 1
-                            lines.append(ch)
-                            code_line.append(ch)
-                    elif open_brackets >= 1:
-                        if ch != '\n':
-                            lines.append(ch)
-                            code_line.append(ch)
+                                code_order = {}
+                                lines = []
+                                comments = {}
+                                num_of_newlines = 0
+                            else:
+                                open_brackets -= 1
+                                lines.append(ch)
+                                code_line.append(ch)
+                        elif open_brackets >= 1:
+                            if ch != '\n':
+                                lines.append(ch)
+                                code_line.append(ch)
 
 
 
