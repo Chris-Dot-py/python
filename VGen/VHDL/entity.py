@@ -267,10 +267,10 @@ class Entity:
                     file.write(self.get_code())
             except:
                 msg = '\n'\
-                      '###############################################\n'\
-                      'Invalid Path\n'\
+                      '-----------------------------------------------\n'\
+                      'Invalid Path:\n'\
                       '    current working directory != VGen directory\n'\
-                      '###############################################'
+                      '-----------------------------------------------'
                 print(msg)
         else:
             print(f'Failed to generate code : file \'{fname}\' already exists...')

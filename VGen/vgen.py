@@ -14,7 +14,12 @@ root.title("VGen")
 root.geometry("600x500")
 root.resizable(False,False) # x and y direction of window not resizable
 # file paths placeholder
-dir_path =  sys.argv[1] if path.isdir(sys.argv[1]) else '/'
+# .\vgen.py < initial browse directory path >
+if len(sys.argv) == 2:
+    dir_path =  sys.argv[1] if path.isdir(sys.argv[1]) else '/'
+else:
+    dir_path = '/'
+
 fpaths_fname = 'VHDL_files.txt'
 added_components = {}
 collected_paths = []
@@ -32,15 +37,15 @@ selected_out_port = StringVar(root)
 selected_in_port = ''
 out_port_connections = {}
 selected_in_ports = []
-is_highlight_on_a = BooleanVar(root, False)
 is_highlight_on_b = []
 
-isExpanded = BooleanVar(root,False)
+isHiglightOn_a = BooleanVar(root, False)
+isExpanded = BooleanVar(root,False) # if port list of selected entity is expanded
 last_clicked_port = IntVar(root,0)
 last_clicked_entity = StringVar()
 last_clicked_entity_pos = IntVar(root,0)
 
-### Port Mapping related Funcitons #######################################################
+### GUI Port Mapping related Funcitons ###################################################
 def pop_up_a(event, num, entity_name):
     for entity_label in entity_labels_a:
         entity_label.pack_forget()
@@ -50,16 +55,27 @@ def pop_up_a(event, num, entity_name):
             entity_labels_a.remove(port_labels_a_frames[entity_name])
             isExpanded.set(False)
         else:
+            # clear highlight on the last opened entity when clicking to another one
             entity_labels_a.remove(port_labels_a_frames[last_clicked_entity.get()]) # change pos
-            entity_labels_a.insert(num+1, port_labels_a_frames[entity_name]) # change pos
-            last_clicked_entity_pos.set(num)
-            last_clicked_entity.set(entity_name)
+            for port_label in port_labels_a[last_clicked_entity.get()]:
+                port_label.configure(bg = 'white')
+                port_label.pack_forget()
 
+            for port_label in port_labels_a[last_clicked_entity.get()]:
+             port_label.pack(side = 'top', anchor = 'nw')
+
+             # needed to clear the "some port out is selected" condition
+             # when clicking to another entities
+             isHiglightOn_a.set(False)
+
+
+            entity_labels_a.insert(num+1, port_labels_a_frames[entity_name]) # change pos
     else:
-        entity_labels_a.insert(num+1, port_labels_a_frames[entity_name]) # change pos
-        last_clicked_entity_pos.set(num)
-        last_clicked_entity.set(entity_name)
         isExpanded.set(True)
+        entity_labels_a.insert(num+1, port_labels_a_frames[entity_name]) # change pos
+
+    last_clicked_entity_pos.set(num)
+    last_clicked_entity.set(entity_name)
 
     for index,entity_label in enumerate(entity_labels_a):
         entity_label.pack(side = 'top', anchor = 'nw')
@@ -84,14 +100,17 @@ def pop_up_b(event, num):
         entity_label.pack(side = 'top', anchor = 'nw')
 
 def select_out_port(event, num):
-    for port_label in port_labels_a:
+    msg = f'passed num : {num}'
+    print(msg)
+    for port_label in port_labels_a[last_clicked_entity.get()]:
         port_label.configure(bg = 'white')
         port_label.pack_forget()
 
-    for index,port_label in enumerate(port_labels_a):
+    for index,port_label in enumerate(port_labels_a[last_clicked_entity.get()]):
         if index == num:
-            if is_highlight_on_a.get() is False:
-                is_highlight_on_a.set(True)
+            if isHiglightOn_a.get() is False:
+                isHiglightOn_a.set(True)
+                last_clicked_port.set(num)
                 port_label.configure(bg = 'cyan')
                 port_label.pack(side = 'top', anchor = 'nw')
                 selected_out_port.set(port_label['text'].replace(' ',''))
@@ -102,35 +121,35 @@ def select_out_port(event, num):
                     port_label.configure(bg = 'cyan')
                     port_label.pack(side = 'top', anchor = 'nw')
                     selected_out_port.set(port_label['text'].replace(' ',''))
-                    # deselect port labels b
-                    for port_label in port_labels_b:
-                        is_highlight_on_b[index].set(False)
-                        port_label.pack_forget()
-
-                    for port_label in port_labels_b:
-                        port_label.configure(bg = 'white')
-                        port_label.pack(side = 'top', anchor = 'nw')
+                    # # deselect port labels b
+                    # for port_label in port_labels_b:
+                    #     is_highlight_on_b[index].set(False)
+                    #     port_label.pack_forget()
+                    #
+                    # for port_label in port_labels_b:
+                    #     port_label.configure(bg = 'white')
+                    #     port_label.pack(side = 'top', anchor = 'nw')
 
                 # clicking on the same port
                 else:
-                    is_highlight_on_a.set(False)
+                    isHiglightOn_a.set(False)
                     port_label.pack(side = 'top', anchor = 'nw')
-                    selected_out_port.set('')
-                    # deselect port labels b
-                    for port_label in port_labels_b:
-                        port_label.pack_forget()
-
-                    for port_label in port_labels_b:
-                        port_label.configure(bg = 'white')
-                        port_label.pack(side = 'top', anchor = 'nw')
+                    selected_out_port.set('None')
+                    # # deselect port labels b
+                    # for port_label in port_labels_b:
+                    #     port_label.pack_forget()
+                    #
+                    # for port_label in port_labels_b:
+                    #     port_label.configure(bg = 'white')
+                    #     port_label.pack(side = 'top', anchor = 'nw')
         else:
             port_label.pack(side = 'top', anchor = 'nw')
 
-    if len(selected_out_port.get()) != 0:
-        print(selected_out_port.get())
+    msg = f'{last_clicked_port.get()} {selected_out_port.get()}'
+    print(msg)
 
 def multi_select_in_port(event, num):
-    if is_highlight_on_a.get() is True:
+    if isHiglightOn_a.get() is True:
         for port_label in port_labels_b:
             port_label.pack_forget()
 
@@ -194,16 +213,21 @@ def browse():
 
                 port_labels_a_frames[tmp_entity.get_entity_name()] = Frame(frame_a, bg = 'white')
 
-                for index,(port_name,port) in enumerate(tmp_ports.items()):
+                """
+                    enumerate doesn't work here since we are only printing the out ports in frame a
+                    and the out ports relative position to all of the ports have different indexes
+                """
+                out_port_pos = 0
+                for port_name,port in tmp_ports.items():
                     if port.get_direction() == 'out':
                         s = '    ' + port_name
                         port_label = Label(port_labels_a_frames[tmp_entity.get_entity_name()], text = s, fg = 'blue', bg = 'white')
                         port_label.pack(side = 'top', anchor = 'nw')
                         port_label.pack_propagate(False)
-                        port_label.bind('<Button-1>', lambda event, i = index: select_out_port(event,i))
+                        print(f'{out_port_pos} ' + port_label['text'])
+                        port_label.bind('<Button-1>', lambda event, i = out_port_pos: select_out_port(event,i))
                         port_labels_a[tmp_entity.get_entity_name()].append(port_label)
-
-
+                        out_port_pos += 1
 
                 if not check_file(fpaths_fname):
                     with open(fpaths_fname, mode = 'w') as file:
@@ -231,10 +255,10 @@ def browse():
             print(s)
 
         # view added ports
-        for x,y in port_labels_a.items():
-            print(f'{x} :\n')
-            for z in y:
-                print(z['text'])
+        # for x,y in port_labels_a.items():
+        #     print(f'\n{x} :\n')
+        #     for index,z in enumerate(y):
+        #         print(f'{index} ' + z['text'])
     else:
         print('No selected files')
 
@@ -337,7 +361,7 @@ def message(s,c):
     GUI_message.pack(side = 'top', anchor = 'w')
 
 def instantiate():
-    print(file_list.get(ANCHOR))
+    # print(file_list.get(ANCHOR))
 
     if len(file_list.get(ANCHOR)) != 0:
         parent_entity.instantiate(added_components[file_list.get(ANCHOR)])
