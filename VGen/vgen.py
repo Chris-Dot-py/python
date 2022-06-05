@@ -28,96 +28,150 @@ present_paths = set()
 parent_entity = Entity()
 entity_labels_a = [] # OUT
 port_labels_a = {}
-port_labels_a_frames = {}
+port_label_frames_a = {}
+
 entity_labels_b = [] # IN
-port_labels_b = []
+port_labels_b = {}
+port_label_frames_b = {}
+
 instances = {} # {'Entity name' : [Port, .., Port]}
 
 selected_out_port = StringVar(root)
 selected_in_port = ''
 out_port_connections = {}
 selected_in_ports = []
-is_highlight_on_b = []
 
+isExpanded_a = BooleanVar(root,False) # if port list of selected entity is expanded
 isHiglightOn_a = BooleanVar(root, False)
-isExpanded = BooleanVar(root,False) # if port list of selected entity is expanded
-last_clicked_port = IntVar(root,0)
-last_clicked_entity = StringVar()
-last_clicked_entity_pos = IntVar(root,0)
+last_clicked_port_a = IntVar(root,0)
+last_clicked_entity_a = StringVar()
+last_clicked_entity_a_pos = IntVar(root,0)
+
+isExpanded_b = BooleanVar(root,False) # if port list of selected entity is expanded
+isHiglightOn_b = BooleanVar(root, False)
+selected_in_ports = []
+last_clicked_port_b = IntVar(root,0)
+last_clicked_entity_b = StringVar()
+last_clicked_entity_b_pos = IntVar(root,0)
 
 ### GUI Port Mapping related Funcitons ###################################################
 def pop_up_a(event, num, entity_name):
+    # clear every label
     for entity_label in entity_labels_a:
         entity_label.pack_forget()
 
-    if isExpanded.get() is True:
-        if last_clicked_entity_pos.get() == num:
-            entity_labels_a.remove(port_labels_a_frames[entity_name])
-            isExpanded.set(False)
+    # update label configuations
+    if isExpanded_a.get() is True:
+        if last_clicked_entity_a_pos.get() == num:
+            entity_labels_a.remove(port_label_frames_a[entity_name])
+            isExpanded_a.set(False)
         else:
-            # clear highlight on the last opened entity when clicking to another one
-            entity_labels_a.remove(port_labels_a_frames[last_clicked_entity.get()]) # change pos
-            for port_label in port_labels_a[last_clicked_entity.get()]:
+            entity_labels_a.remove(port_label_frames_a[last_clicked_entity_a.get()]) # change pos
+            entity_labels_a.insert(num+1, port_label_frames_a[entity_name]) # change pos
+            # clear highlight when clicking another entity
+            isHiglightOn_a.set(False)
+            for port_label in port_labels_a[last_clicked_entity_a.get()]:
                 port_label.configure(bg = 'white')
                 port_label.pack_forget()
 
-            for port_label in port_labels_a[last_clicked_entity.get()]:
+            for port_label in port_labels_a[last_clicked_entity_a.get()]:
              port_label.pack(side = 'top', anchor = 'nw')
-
-             # needed to clear the "some port out is selected" condition
-             # when clicking to another entities
-             isHiglightOn_a.set(False)
-
-
-            entity_labels_a.insert(num+1, port_labels_a_frames[entity_name]) # change pos
     else:
-        isExpanded.set(True)
-        entity_labels_a.insert(num+1, port_labels_a_frames[entity_name]) # change pos
+        isExpanded_a.set(True)
+        entity_labels_a.insert(num+1, port_label_frames_a[entity_name]) # change pos
 
-    last_clicked_entity_pos.set(num)
-    last_clicked_entity.set(entity_name)
+    # keep track of what was the last thing that has been clicked
+    last_clicked_entity_a_pos.set(num)
+    last_clicked_entity_a.set(entity_name)
 
+    # reprint updated labels
     for index,entity_label in enumerate(entity_labels_a):
         entity_label.pack(side = 'top', anchor = 'nw')
 
-def pop_up_b(event, num):
+def pop_up_b(event, num, entity_name):
+    # clear every label
     for entity_label in entity_labels_b:
         entity_label.pack_forget()
-        port_labels_frame_b.pack_forget()
 
-    if port_labels_frame_b in entity_labels_b:
-        if last_clicked_entity.get() != num:
-            entity_labels_b.remove(port_labels_frame_b)
-            entity_labels_b.insert(num+1, port_labels_frame_b) # change pos
-            last_clicked_entity.set(num)
+    # update label configuations
+    if isExpanded_b.get() is True:
+        if last_clicked_entity_b_pos.get() == num:
+            entity_labels_b.remove(port_label_frames_b[entity_name])
+            isExpanded_b.set(False)
         else:
-            entity_labels_b.remove(port_labels_frame_b)
-    else:
-        last_clicked_entity.set(num)
-        entity_labels_b.insert(num+1, port_labels_frame_b)
+            entity_labels_b.remove(port_label_frames_b[last_clicked_entity_b.get()]) # change pos
+            entity_labels_b.insert(num+1, port_label_frames_b[entity_name]) # change pos
+            # clear highlight when clicking another entity
+            for (port_label,isSelected) in port_labels_b[last_clicked_entity_b.get()]:
+                port_label.configure(bg = 'white')
+                port_label.pack_forget()
 
+            for (port_label,isSelected) in port_labels_b[last_clicked_entity_b.get()]:
+             port_label.pack(side = 'top', anchor = 'nw')
+    else:
+        isExpanded_b.set(True)
+        entity_labels_b.insert(num+1, port_label_frames_b[entity_name]) # change pos
+
+    # keep track of what was the last thing that has been clicked
+    last_clicked_entity_b_pos.set(num)
+    last_clicked_entity_b.set(entity_name)
+
+    # reprint updated labels
     for index,entity_label in enumerate(entity_labels_b):
         entity_label.pack(side = 'top', anchor = 'nw')
+
+# def pop_up_b(event, num,entity_name):
+#     # clear every label
+#     for entity_label in entity_labels_b:
+#         entity_label.pack_forget()
+#
+#     # update label configuations
+#     if isExpanded.get() is True:
+#         if last_clicked_entity_b_pos.get() == num:
+#             entity_labels_b.remove(port_label_frames_b[entity_name])
+#             isExpanded.set(False)
+#         else:
+#             entity_labels_b.remove(port_label_frames_b[last_clicked_entity_b.get()]) # change pos
+#             entity_labels_b.insert(num+1, port_label_frames_b[entity_name]) # change pos
+#             # clear highlight when clicking another entity
+#             isHiglightOn_b.set(False)
+#             for port_label in port_labels_b[last_clicked_entity_b.get()]:
+#                 port_label.configure(bg = 'white')
+#                 port_label.pack_forget()
+#
+#             for port_label in port_labels_b[last_clicked_entity_b.get()]:
+#              port_label.pack(side = 'top', anchor = 'nw')
+#     else:
+#         isExpanded.set(True)
+#         entity_labels_b.insert(num+1, port_label_frames_b[entity_name]) # change pos
+#
+#     # keep track of what was the last thing that has been clicked
+#     last_clicked_entity_b_pos.set(num)
+#     last_clicked_entity_b.set(entity_name)
+#
+#     # reprint updated labels
+#     for index,entity_label in enumerate(entity_labels_b):
+#         entity_label.pack(side = 'top', anchor = 'nw')
 
 def select_out_port(event, num):
     msg = f'passed num : {num}'
     print(msg)
-    for port_label in port_labels_a[last_clicked_entity.get()]:
+    for port_label in port_labels_a[last_clicked_entity_a.get()]:
         port_label.configure(bg = 'white')
         port_label.pack_forget()
 
-    for index,port_label in enumerate(port_labels_a[last_clicked_entity.get()]):
+    for index,port_label in enumerate(port_labels_a[last_clicked_entity_a.get()]):
         if index == num:
             if isHiglightOn_a.get() is False:
                 isHiglightOn_a.set(True)
-                last_clicked_port.set(num)
+                last_clicked_port_a.set(num)
                 port_label.configure(bg = 'cyan')
                 port_label.pack(side = 'top', anchor = 'nw')
                 selected_out_port.set(port_label['text'].replace(' ',''))
             else:
                 # cliking on different port
-                if last_clicked_port.get() != num:
-                    last_clicked_port.set(num)
+                if last_clicked_port_a.get() != num:
+                    last_clicked_port_a.set(num)
                     port_label.configure(bg = 'cyan')
                     port_label.pack(side = 'top', anchor = 'nw')
                     selected_out_port.set(port_label['text'].replace(' ',''))
@@ -145,37 +199,33 @@ def select_out_port(event, num):
         else:
             port_label.pack(side = 'top', anchor = 'nw')
 
-    msg = f'{last_clicked_port.get()} {selected_out_port.get()}'
+    msg = f'{last_clicked_port_a.get()} {selected_out_port.get()}'
     print(msg)
 
-def multi_select_in_port(event, num):
-    if isHiglightOn_a.get() is True:
-        for port_label in port_labels_b:
+def select_in_ports(event, num):
+    if isHiglightOn_a.get() is True: # some out port is selected
+        for (port_label,isSelected) in port_labels_b[last_clicked_entity_b.get()]:
             port_label.pack_forget()
 
-        for index,port_label in enumerate(port_labels_b):
+        for index,(port_label,isSelected) in enumerate(port_labels_b[last_clicked_entity_b.get()]):
             if index == num:
-                if is_highlight_on_b[index].get() is False:
-                    is_highlight_on_b[index].set(True)
+                if isSelected is False:
                     port_label.configure(bg = 'cyan')
                     port_label.pack(side = 'top', anchor = 'nw')
-                    if len(selected_out_port.get()) != 0:
-                        out_port_connections[selected_out_port.get()].append(port_label['text'])
+                    port_labels_b[last_clicked_entity_b.get()][index] = port_label,True # toggle connection active
+                    out_port_connections[last_clicked_entity_b.get()][selected_out_port.get()].append(port_label['text'].replace(' ',''))
                 else:
-                    is_highlight_on_b[index].set(False)
                     port_label.configure(bg = 'white')
                     port_label.pack(side = 'top', anchor = 'nw')
-                    if len(selected_out_port.get()) != 0:
-                        out_port_connections[selected_out_port.get()].remove(port_label['text'])
+                    port_labels_b[last_clicked_entity_b.get()][index] = port_label,False # toggle connection active
+                    out_port_connections[last_clicked_entity_b.get()][selected_out_port.get()].remove(port_label['text'].replace(' ',''))
             else:
                 port_label.pack(side = 'top', anchor = 'nw')
-
-        print(out_port_connections[selected_out_port.get()])
     else:
-        for port_label in port_labels_b:
+        for (port_label,isSelected) in port_labels_b[last_clicked_entity_b.get()]:
             port_label.pack_forget()
 
-        for port_label in port_labels_b:
+        for (port_label,isSelected) in port_labels_b[last_clicked_entity_b.get()]:
             port_label.configure(bg = 'white')
             port_label.pack(side = 'top', anchor = 'nw')
         Label(root,text = 'no selected out ports', fg = 'red').grid()
@@ -210,24 +260,38 @@ def browse():
 
                 tmp_ports = tmp_entity.get_ports()
                 port_labels_a[tmp_entity.get_entity_name()] = []
+                port_labels_b[tmp_entity.get_entity_name()] = []
+                out_port_connections[tmp_entity.get_entity_name()] = {}
 
-                port_labels_a_frames[tmp_entity.get_entity_name()] = Frame(frame_a, bg = 'white')
+                port_label_frames_a[tmp_entity.get_entity_name()] = Frame(frame_a, bg = 'white')
+                port_label_frames_b[tmp_entity.get_entity_name()] = Frame(frame_b, bg = 'white')
 
                 """
                     enumerate doesn't work here since we are only printing the out ports in frame a
                     and the out ports relative position to all of the ports have different indexes
                 """
                 out_port_pos = 0
+                in_port_pos = 0
                 for port_name,port in tmp_ports.items():
                     if port.get_direction() == 'out':
                         s = '    ' + port_name
-                        port_label = Label(port_labels_a_frames[tmp_entity.get_entity_name()], text = s, fg = 'blue', bg = 'white')
+                        port_label = Label(port_label_frames_a[tmp_entity.get_entity_name()], text = s, fg = 'blue', bg = 'white')
                         port_label.pack(side = 'top', anchor = 'nw')
                         port_label.pack_propagate(False)
-                        print(f'{out_port_pos} ' + port_label['text'])
                         port_label.bind('<Button-1>', lambda event, i = out_port_pos: select_out_port(event,i))
                         port_labels_a[tmp_entity.get_entity_name()].append(port_label)
+                        out_port_connections[tmp_entity.get_entity_name()][port_name] = []
+                        print(f'{out_port_pos} ' + port_label['text'] )
                         out_port_pos += 1
+                    elif port.get_direction() == 'in':
+                        s = '    ' + port_name
+                        port_label = Label(port_label_frames_b[tmp_entity.get_entity_name()], text = s, fg = 'blue', bg = 'white')
+                        port_label.pack(side = 'top', anchor = 'nw')
+                        port_label.pack_propagate(False)
+                        print(f'{in_port_pos} ' + port_label['text'])
+                        port_label.bind('<Button-1>', lambda event, i = in_port_pos: select_in_ports(event,i))
+                        port_labels_b[tmp_entity.get_entity_name()].append((port_label,False))
+                        in_port_pos += 1
 
                 if not check_file(fpaths_fname):
                     with open(fpaths_fname, mode = 'w') as file:
@@ -253,6 +317,9 @@ def browse():
         for files in collected_paths:
             s = '  ' + files
             print(s)
+
+        for x in out_port_connections[tmp_entity.get_entity_name()].keys():
+            print(x)
 
         # view added ports
         # for x,y in port_labels_a.items():
@@ -323,7 +390,7 @@ def generate():
 
             entity_labels_a.clear()
             port_labels_a.clear()
-            port_labels_a_frames.clear()
+            port_label_frames_a.clear()
             instances.clear()
 
         else:
@@ -371,6 +438,13 @@ def instantiate():
         entity_label_a.bind('<Button-1>', lambda event, i = index, s = file_list.get(ANCHOR): pop_up_a(event,i,s))
         entity_label_a.pack_propagate(False)
         entity_labels_a.append(entity_label_a)
+
+        index = len(entity_labels_b)
+        entity_label_b = Label(frame_b, text = file_list.get(ANCHOR), bg = 'white')
+        entity_label_b.pack(side = 'top', anchor = 'nw')
+        entity_label_b.bind('<Button-1>', lambda event, i = index, s = file_list.get(ANCHOR): pop_up_b(event,i,s))
+        entity_label_b.pack_propagate(False)
+        entity_labels_b.append(entity_label_b)
 
         # entity_label_b = Label(frame_b, text = file_list.get(ANCHOR), bg = 'white')
         # entity_label_b.pack(side = 'top', anchor = 'nw')
@@ -426,8 +500,6 @@ border_a = Frame(root, bg = 'black', width = 200)
 frame_a = Frame(border_a, bg = 'white', width = 200)
 border_b = Frame(root, bg = 'black', width = 200)
 frame_b = Frame(border_b, bg = 'white', width = 200)
-port_labels_frame_a = Frame(frame_a, bg = 'white')
-port_labels_frame_b = Frame(frame_b, bg = 'white')
 
 label_file_explorer = Label(root, text = "Added components : ")
 
