@@ -38,7 +38,7 @@ instances = {} # {'Entity name' : [Port, .., Port]}
 
 selected_out_port = StringVar(root)
 selected_in_port = ''
-out_port_connections = {}
+out_port_connections = {} # {'entity_a' : [port_a, ..., port_a]}
 selected_in_ports = []
 
 isExpanded_a = BooleanVar(root,False) # if port list of selected entity is expanded
@@ -102,11 +102,11 @@ def pop_up_b(event, num, entity_name):
             entity_labels_b.remove(port_label_frames_b[last_clicked_entity_b.get()]) # change pos
             entity_labels_b.insert(num+1, port_label_frames_b[entity_name]) # change pos
             # clear highlight when clicking another entity
-            for (port_label,isSelected) in port_labels_b[last_clicked_entity_b.get()]:
+            for (port_label,isConnected, connections) in port_labels_b[last_clicked_entity_b.get()]:
                 port_label.configure(bg = 'white')
                 port_label.pack_forget()
 
-            for (port_label,isSelected) in port_labels_b[last_clicked_entity_b.get()]:
+            for (port_label,isConnected, connections) in port_labels_b[last_clicked_entity_b.get()]:
              port_label.pack(side = 'top', anchor = 'nw')
     else:
         isExpanded_b.set(True)
@@ -152,7 +152,10 @@ def pop_up_b(event, num, entity_name):
 #     # reprint updated labels
 #     for index,entity_label in enumerate(entity_labels_b):
 #         entity_label.pack(side = 'top', anchor = 'nw')
-
+"""
+    scenarios:
+    1)
+"""
 def select_out_port(event, num):
     msg = f'passed num : {num}'
     print(msg)
@@ -171,6 +174,7 @@ def select_out_port(event, num):
             else:
                 # cliking on different port
                 if last_clicked_port_a.get() != num:
+                    select_in_ports(event)
                     last_clicked_port_a.set(num)
                     port_label.configure(bg = 'cyan')
                     port_label.pack(side = 'top', anchor = 'nw')
@@ -202,34 +206,58 @@ def select_out_port(event, num):
     msg = f'{last_clicked_port_a.get()} {selected_out_port.get()}'
     print(msg)
 
-def select_in_ports(event, num):
-    if isHiglightOn_a.get() is True: # some out port is selected
-        for (port_label,isSelected) in port_labels_b[last_clicked_entity_b.get()]:
-            port_label.pack_forget()
+def select_in_ports(event, num = None):
+    if num != None:
+        if isHiglightOn_a.get() is True: # some out port is selected
+            for (port_label,isConnected,connection) in port_labels_b[last_clicked_entity_b.get()]:
+                print(port_label['text'] + ' ' + str(isConnected))
+                port_label.pack_forget()
 
-        for index,(port_label,isSelected) in enumerate(port_labels_b[last_clicked_entity_b.get()]):
-            if index == num:
-                if isSelected is False:
-                    port_label.configure(bg = 'cyan')
-                    port_label.pack(side = 'top', anchor = 'nw')
-                    port_labels_b[last_clicked_entity_b.get()][index] = port_label,True # toggle connection active
-                    out_port_connections[last_clicked_entity_b.get()][selected_out_port.get()].append(port_label['text'].replace(' ',''))
+            for index,(port_label,isConnected,connection) in enumerate(port_labels_b[last_clicked_entity_b.get()]):
+                if index == num:
+                    if isConnected is False:
+                        port_label.configure(bg = 'cyan')
+                        port_label.pack(side = 'top', anchor = 'nw')
+                        if last_clicked_entity_b.get() not in out_port_connections[last_clicked_entity_a.get()][selected_out_port.get()].keys():
+                            out_port_connections[last_clicked_entity_a.get()][selected_out_port.get()][last_clicked_entity_b.get()] = []
+                            out_port_connections[last_clicked_entity_a.get()][selected_out_port.get()]\
+                                                [last_clicked_entity_b.get()].append(port_label['text'].replace(' ',''))
+                        else:
+                            out_port_connections[last_clicked_entity_a.get()][selected_out_port.get()]\
+                                                [last_clicked_entity_b.get()].append(port_label['text'].replace(' ',''))
+                        tmp_connection = {}
+                        tmp_connection[last_clicked_entity_a.get()] = selected_out_port.get()
+                        port_labels_b[last_clicked_entity_b.get()][index] = port_label,True,tmp_connection # toggle connection active
+                    else:
+                        port_label.configure(bg = 'white')
+                        port_label.pack(side = 'top', anchor = 'nw')
+                        print('entity a = ' + last_clicked_entity_a.get() + ' : ' + selected_out_port.get())
+                        print('entity b = ' + last_clicked_entity_b.get() + ' : ' + port_label['text'].replace(' ',''))
+                        out_port_connections[last_clicked_entity_a.get()][selected_out_port.get()]\
+                                            [last_clicked_entity_b.get()].remove(port_label['text'].replace(' ',''))
+                        port_labels_b[last_clicked_entity_b.get()][index] = port_label,False,{} # toggle connection active
                 else:
-                    port_label.configure(bg = 'white')
                     port_label.pack(side = 'top', anchor = 'nw')
-                    port_labels_b[last_clicked_entity_b.get()][index] = port_label,False # toggle connection active
-                    out_port_connections[last_clicked_entity_b.get()][selected_out_port.get()].remove(port_label['text'].replace(' ',''))
-            else:
+        else:
+            for (port_label,isConnected,connection) in port_labels_b[last_clicked_entity_b.get()]:
+                port_label.pack_forget()
+
+            for (port_label,isConnected,connection) in port_labels_b[last_clicked_entity_b.get()]:
+                port_label.configure(bg = 'white')
                 port_label.pack(side = 'top', anchor = 'nw')
+            Label(root,text = 'no selected out ports', fg = 'red').grid()
+
+        print(selected_out_port.get())
+        s = f'{last_clicked_entity_b.get()} : {out_port_connections[last_clicked_entity_a.get()][selected_out_port.get()][last_clicked_entity_b.get()]}'
+        print(s)
     else:
-        for (port_label,isSelected) in port_labels_b[last_clicked_entity_b.get()]:
-            port_label.pack_forget()
+        for entity,ports in port_labels_b.items():
+            for (port_label,isConnected,connections) in ports:
+                port_label.pack_forget()
 
-        for (port_label,isSelected) in port_labels_b[last_clicked_entity_b.get()]:
-            port_label.configure(bg = 'white')
-            port_label.pack(side = 'top', anchor = 'nw')
-        Label(root,text = 'no selected out ports', fg = 'red').grid()
-
+            for (port_label,isConnected,connections) in ports:
+                port_label.configure(bg = 'white')
+                port_label.pack(side = 'top', anchor = 'nw')
 
 ### Button commands ######################################################################
 def set_directory_path(s):
@@ -280,7 +308,7 @@ def browse():
                         port_label.pack_propagate(False)
                         port_label.bind('<Button-1>', lambda event, i = out_port_pos: select_out_port(event,i))
                         port_labels_a[tmp_entity.get_entity_name()].append(port_label)
-                        out_port_connections[tmp_entity.get_entity_name()][port_name] = []
+                        out_port_connections[tmp_entity.get_entity_name()][port_name] = {} # {'entity_b' : [port_b, ..., port_b]}
                         print(f'{out_port_pos} ' + port_label['text'] )
                         out_port_pos += 1
                     elif port.get_direction() == 'in':
@@ -290,7 +318,7 @@ def browse():
                         port_label.pack_propagate(False)
                         print(f'{in_port_pos} ' + port_label['text'])
                         port_label.bind('<Button-1>', lambda event, i = in_port_pos: select_in_ports(event,i))
-                        port_labels_b[tmp_entity.get_entity_name()].append((port_label,False))
+                        port_labels_b[tmp_entity.get_entity_name()].append((port_label,False,{})) # if true, its connected to {'entity_a' : 'outport_a'}
                         in_port_pos += 1
 
                 if not check_file(fpaths_fname):
