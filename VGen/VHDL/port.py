@@ -5,7 +5,6 @@ class Port:
         self.__port_type = port_type
         self.__port_len = port_len
         self.__isConnected = False
-        self.__number_of_connections = 0
         self.__connections = {} # {'entity_name' : Port}
 
         if type(self.__port_len) == type('string'): # length defined by an expression
@@ -19,16 +18,11 @@ class Port:
     def connect_port(self, target_entity, target_port):
         if target_port.get_direction() != self.get_direction(): # in - out | out - in
             self.__connections[target_entity.get_entity_name()] = target_port
-            self.__number_of_connections += 1
         else:
             print('invalid connection')
 
-    def disconnect_port(self, target_port):
-        if target_port in self.__connections:
-            self.__connections.remove(target_port)
-            self.__number_of_connections -= 1
-        else:
-            print('port not present')
+    def disconnect_port(self,target_entity, target_port):
+        self.__connections.clear()
 
     ### Get Methods ######################################################################
     def get_port_name(self): return self.__port_name
